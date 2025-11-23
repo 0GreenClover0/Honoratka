@@ -17,7 +17,14 @@ void AWinManager::BeginPlay()
 
     if (TimerRef->IsValidLowLevel())
     {
-        TimerRef->OnTimerFinished.AddDynamic(this, &AWinManager::HandleTimerFinished);
+        if (ATimer* Timer = Cast<ATimer>(TimerRef))
+        {
+            Timer->OnTimerFinished.AddDynamic(this, &AWinManager::HandleTimerFinished);
+        }
+        else
+        {
+            ensure(Timer);
+        }
     }
 }
 
