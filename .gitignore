@@ -76,3 +76,9 @@ DerivedDataCache/*
 
 # ReSharper cache
 _ReSharper.Caches/*
+
+# ReSharper User settings
+Honoratka.sln.DotSettings.user
+
+# Visual Studio cache
+enc_temp_folder/*
