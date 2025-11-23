@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "WinManager.generated.h"
 
+class ATimer;
+
 UCLASS()
 class HONORATKA_API AWinManager : public AActor
 {
@@ -15,7 +17,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     UPROPERTY(EditAnywhere)
-    AActor* TimerRef = nullptr;
+    ATimer* TimerRef = nullptr;
 
 protected:
     virtual void BeginPlay() override;
