@@ -1,5 +1,4 @@
 #include "Customer.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 ACustomer::ACustomer()
 {
@@ -22,7 +21,6 @@ void ACustomer::Tick(float DeltaTime)
 	if (bMovingToTarget)
 	{
 		UpdateMovement(DeltaTime);
-		TurnTowardTarget(DeltaTime);
 	}
 }
 
@@ -56,16 +54,6 @@ void ACustomer::SetTargetPosition(const FVector& Target)
 {
 	TargetPosition = Target;
 	bMovingToTarget = true;
-
-	// If paired, move partner to an offset position
-	if (PairedCustomer)
-	{
-		TargetPosition = Target + FVector(0, PairOffset, 0);
-
-		FVector PartnerOffset = Target - FVector(0, PairOffset, 0); // Offset to the side
-		PairedCustomer->TargetPosition = PartnerOffset;
-		PairedCustomer->bMovingToTarget = true;
-	}
 }
 
 void ACustomer::SetPairedCustomer(ACustomer* InPair)
@@ -95,18 +83,6 @@ void ACustomer::UpdateMovement(float DeltaTime)
 	FVector Direction = (TargetPosition - GetActorLocation()).GetSafeNormal();
 	Velocity = Direction * WalkSpeed;
 	AddActorWorldOffset(Velocity * DeltaTime);
-}
-
-void ACustomer::TurnTowardTarget(float DeltaTime)
-{
-	FVector ToTarget = (TargetPosition - GetActorLocation()).GetSafeNormal();
-	FVector CurrentForward = GetActorForwardVector();
-	
-	FRotator TargetRotation = ToTarget.Rotation();
-	FRotator CurrentRotation = GetActorRotation();
-	
-	FRotator NewRotation = FMath::Lerp(CurrentRotation, TargetRotation, RotationSpeed * DeltaTime);
-	SetActorRotation(NewRotation);
 }
 
 bool ACustomer::HasReachedTarget() const

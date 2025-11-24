@@ -41,6 +41,21 @@ void ACustomerManager::Tick(float DeltaTime)
 #endif
 }
 
+void ACustomerManager::SetCustomerGroupPosition(ACustomer* Customer, const FVector& Position) const
+{
+	if (Customer->IsPaired())
+	{
+		Customer->SetTargetPosition(Position + FVector(0, PairSideOffset, 0));
+
+		ACustomer* Pair = Customer->GetPairedCustomer();
+		Pair->SetTargetPosition(Position - FVector(0, PairSideOffset, 0));
+	}
+	else
+	{
+		Customer->SetTargetPosition(Position);
+	}
+}
+
 void ACustomerManager::SpawnCustomerGroup()
 {
 	if (!CustomerPrefab)
@@ -93,7 +108,8 @@ void ACustomerManager::SpawnCustomerGroup()
 
 		CustomerQueue.Add(Slot);
 		SpawnedCustomers[0]->SetQueuePosition(CustomerQueue.Num() - 1);
-		SpawnedCustomers[0]->SetTargetPosition(Slot.QueuePosition);
+
+		SetCustomerGroupPosition(SpawnedCustomers[0], Slot.QueuePosition);
 
 		UE_LOG(LogTemp, Log, TEXT("Spawned %d customer(s). Queue length: %d"), SpawnedCustomers.Num(), CustomerQueue.Num());
 	}
@@ -112,7 +128,7 @@ void ACustomerManager::UpdateQueuePositions()
 			if (CustomerQueue[i].Customer->GetCustomerState() == ECustomerState::WaitingInQueue ||
 				CustomerQueue[i].Customer->GetCustomerState() == ECustomerState::MovingForward)
 			{
-				CustomerQueue[i].Customer->SetTargetPosition(TargetPos);
+				SetCustomerGroupPosition(CustomerQueue[i].Customer, TargetPos);
 			}
 		}
 	}
@@ -127,19 +143,22 @@ void ACustomerManager::MoveQueueForward()
 {
 	if (CustomerQueue.Num() > 0)
 	{
-		// First customer moves to counter
-		if (CustomerQueue[0].Customer)
-		{
-			CustomerQueue[0].Customer->SetCustomerState(ECustomerState::AtCounter);
-			CustomerQueue[0].Customer->SetTargetPosition(CounterPosition);
-		}
-
 		// Remove from queue
 		CustomerQueue.RemoveAt(0);
 
 		// Update positions for remaining customers
 		UpdateQueuePositions();
 	}
+}
+
+ACustomer* ACustomerManager::GetFirstCustomerInQueue() const
+{
+	if (CustomerQueue.Num() > 0)
+	{
+		return CustomerQueue[0].Customer;
+	}
+
+	return nullptr;
 }
 
 void ACustomerManager::RemoveCustomerFromQueue(ACustomer* Customer)
@@ -178,7 +197,5 @@ void ACustomerManager::DebugDrawQueue() const
 		FVector Pos = GetQueuePositionForIndex(i);
 		DrawDebugSphere(GetWorld(), Pos, 20.0f, 8, FColor::Green, false, -1.0f, 0, 2.0f);
 	}
-
-	DrawDebugSphere(GetWorld(), CounterPosition, 30.0f, 8, FColor::Red, false, -1.0f, 0, 2.0f);
 }
 #endif

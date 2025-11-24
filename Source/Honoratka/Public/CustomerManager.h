@@ -48,9 +48,6 @@ public:
 	FVector QueueDirection = FVector(0, 1, 0);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
-	FVector CounterPosition = FVector(0, 0, 0);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
 	float PairSideOffset = 50.0f;
 
 	// Spawn point
@@ -64,6 +61,7 @@ public:
 	// Queue management
 	void MoveQueueForward();
 	int32 GetQueueLength() const { return CustomerQueue.Num(); }
+	ACustomer* GetFirstCustomerInQueue() const;
 
 	// Debugging
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
@@ -79,6 +77,7 @@ private:
 	float TimeSinceLastSpawn;
 	float NextSpawnTime;
 
+	void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
 	void SpawnCustomerGroup();
 	void UpdateQueuePositions();
 	void RemoveCustomerFromQueue(ACustomer* Customer);
