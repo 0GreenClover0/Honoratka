@@ -11,34 +11,34 @@ class ACustomerManager;
 UCLASS()
 class HONORATKA_API AGameManager : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	AGameManager();
+    GENERATED_BODY()
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+public:
+    AGameManager();
 
-	// Selection system
-	void DeselectCustomers();
-	bool HasSelectedCustomers() const { return SelectedCustomers.Num() > 0; }
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-	// Table assignment
-	void OnTableClicked(AHonoratkaTable* Table);
-	void OnCustomerClicked(ACustomer* Customer);
+    // Selection system
+    void DeselectCustomers();
+    bool HasSelectedCustomers() const { return SelectedCustomers.Num() > 0; }
 
-	// Customer manager reference
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
-	TObjectPtr<ACustomerManager> CustomerManager;
+    // Table assignment
+    void OnTableClicked(AHonoratkaTable* Table);
+    void OnCustomerClicked(ACustomer* Customer);
+
+    // Customer manager reference
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
+    TObjectPtr<ACustomerManager> CustomerManager;
 
 private:
-	UPROPERTY()
-	TArray<TObjectPtr<ACustomer>> SelectedCustomers;
+    UPROPERTY()
+    TArray<TObjectPtr<ACustomer>> SelectedCustomers;
 
-	UPROPERTY()
-	TObjectPtr<AHonoratkaTable> PreviousTable;
+    UPROPERTY()
+    TObjectPtr<AHonoratkaTable> PreviousTable;
 
-	void AssignCustomersToTable(AHonoratkaTable* Table);
-	void HighlightCustomers(bool bHighlight);
-	AHonoratkaTable* FindCustomerTable(ACustomer* Customer) const;
+    void AssignCustomersToTable(AHonoratkaTable* Table);
+    void HighlightCustomers(bool bHighlight);
+    AHonoratkaTable* FindCustomerTable(ACustomer* Customer) const;
 };

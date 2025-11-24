@@ -5,138 +5,139 @@
 
 AHonoratkaTable::AHonoratkaTable()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void AHonoratkaTable::BeginPlay()
 {
-	Super::BeginPlay();
-	InitializeSeats();
+    Super::BeginPlay();
+    InitializeSeats();
 }
 
 void AHonoratkaTable::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 }
 
 void AHonoratkaTable::InitializeSeats()
 {
-	Seats.Empty();
-	for (int32 i = 0; i < MaxSeats; ++i)
-	{
-		FTableSeat Seat;
-		Seat.SeatPosition = CalculateSeatPosition(i);
-		Seats.Add(Seat);
-	}
+    Seats.Empty();
+    for (int32 i = 0; i < MaxSeats; ++i)
+    {
+        FTableSeat Seat;
+        Seat.SeatPosition = CalculateSeatPosition(i);
+        Seats.Add(Seat);
+    }
 }
 
 FVector AHonoratkaTable::CalculateSeatPosition(int32 SeatIndex) const
 {
-	float AngleStep = 360.0f / MaxSeats;
-	float Angle = AngleStep * SeatIndex;
-	float Radians = FMath::DegreesToRadians(Angle);
-	
-	FVector Offset(
-		FMath::Cos(Radians) * SeatRadius,
-		FMath::Sin(Radians) * SeatRadius,
-		0.0f
-	);
-	
-	return GetActorLocation() + Offset;
+    float AngleStep = 360.0f / MaxSeats;
+    float Angle = AngleStep * SeatIndex;
+    float Radians = FMath::DegreesToRadians(Angle);
+
+    FVector Offset(
+        FMath::Cos(Radians) * SeatRadius,
+        FMath::Sin(Radians) * SeatRadius,
+        0.0f
+    );
+
+    return GetActorLocation() + Offset;
 }
 
 bool AHonoratkaTable::CanSeatCustomers(int32 Count) const
 {
-	return GetAvailableSeats() >= Count;
+    return GetAvailableSeats() >= Count;
 }
 
 bool AHonoratkaTable::SeatCustomers(TArray<ACustomer*> Customers)
 {
-	ensure(CanSeatCustomers(Customers.Num()));
+    ensure(CanSeatCustomers(Customers.Num()));
 
-	int32 SeatIndex = 0;
-	for (ACustomer* Customer : Customers)
-	{
-		ensure(Customer);
+    int32 SeatIndex = 0;
+    for (ACustomer* Customer : Customers)
+    {
+        ensure(Customer);
 
-		// Find next available seat
-		while (SeatIndex < Seats.Num() && Seats[SeatIndex].IsOccupied())
-		{
-			SeatIndex++;
-		}
+        // Find next available seat
+        while (SeatIndex < Seats.Num() && Seats[SeatIndex].IsOccupied())
+        {
+            SeatIndex++;
+        }
 
-		if (SeatIndex >= Seats.Num())
-		{
-			return false;
-		}
+        if (SeatIndex >= Seats.Num())
+        {
+            return false;
+        }
 
-		Seats[SeatIndex].Customer = Customer;
-		Customer->SetCustomerState(ECustomerState::Seated);
-		Customer->SetTargetPosition(Seats[SeatIndex].SeatPosition);
-		SeatIndex++;
-	}
+        Seats[SeatIndex].Customer = Customer;
+        Customer->SetCustomerState(ECustomerState::Seated);
+        Customer->SetShowingBubble();
+        Customer->SetTargetPosition(Seats[SeatIndex].SeatPosition);
+        SeatIndex++;
+    }
 
-	return true;
+    return true;
 }
 
 void AHonoratkaTable::RemoveCustomer(ACustomer* Customer)
 {
-	for (FTableSeat& Seat : Seats)
-	{
-		if (Seat.Customer == Customer)
-		{
-			Seat.Customer = nullptr;
-			return;
-		}
-	}
+    for (FTableSeat& Seat : Seats)
+    {
+        if (Seat.Customer == Customer)
+        {
+            Seat.Customer = nullptr;
+            return;
+        }
+    }
 }
 
 void AHonoratkaTable::ClearTable()
 {
-	for (FTableSeat& Seat : Seats)
-	{
-		Seat.Customer = nullptr;
-	}
+    for (FTableSeat& Seat : Seats)
+    {
+        Seat.Customer = nullptr;
+    }
 }
 
 int32 AHonoratkaTable::GetAvailableSeats() const
 {
-	int32 Available = 0;
-	for (const FTableSeat& Seat : Seats)
-	{
-		if (!Seat.IsOccupied())
-		{
-			Available++;
-		}
-	}
-	return Available;
+    int32 Available = 0;
+    for (const FTableSeat& Seat : Seats)
+    {
+        if (!Seat.IsOccupied())
+        {
+            Available++;
+        }
+    }
+    return Available;
 }
 
 int32 AHonoratkaTable::GetOccupiedSeats() const
 {
-	return MaxSeats - GetAvailableSeats();
+    return MaxSeats - GetAvailableSeats();
 }
 
 bool AHonoratkaTable::HasCustomer(ACustomer* Customer) const
 {
-	for (const FTableSeat& Seat : Seats)
-	{
-		if (Seat.Customer == Customer)
-		{
-			return true;
-		}
-	}
+    for (const FTableSeat& Seat : Seats)
+    {
+        if (Seat.Customer == Customer)
+        {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 void AHonoratkaTable::NotifyActorOnClicked(FKey ButtonPressed)
 {
-	Super::NotifyActorOnClicked(ButtonPressed);
+    Super::NotifyActorOnClicked(ButtonPressed);
 
-	AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
-	if (GameManager)
-	{
-		GameManager->OnTableClicked(this);
-	}
+    AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+    if (GameManager)
+    {
+        GameManager->OnTableClicked(this);
+    }
 }

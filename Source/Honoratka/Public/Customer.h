@@ -7,85 +7,107 @@
 UENUM(BlueprintType)
 enum class ECustomerState : uint8
 {
-	Idle = 0,
-	WaitingInQueue = 1,
-	MovingForward = 2,
-	Seated = 3,
-	Leaving = 4
+    Idle = 0,
+    WaitingInQueue = 1,
+    MovingForward = 2,
+    Seated = 3,
+    Leaving = 4
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
 
 UCLASS()
 class HONORATKA_API ACustomer : public ACharacter
 {
-	GENERATED_BODY()
-	
-public:	
-	ACustomer();
+    GENERATED_BODY()
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+public:
+    ACustomer();
 
-	// Queue management
-	void SetQueuePosition(int32 Position);
-	void MoveForward();
-	void LeaveRestaurant();
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-	// State management
-	void SetCustomerState(ECustomerState NewState);
-	ECustomerState GetCustomerState() const { return CurrentState; }
+    // Queue management
+    void SetQueuePosition(int32 Position);
+    void MoveForward();
+    void LeaveRestaurant();
 
-	// Position target
-	void SetTargetPosition(const FVector& Target);
-	FVector GetTargetPosition() const { return TargetPosition; }
+    // Bubble
+    void SetWidgetClass(const TSubclassOf<UUserWidget>& WidgetClass);
+    void SetShowingBubble();
 
-	// Pair management
-	void SetPairedCustomer(ACustomer* InPair);
-	ACustomer* GetPairedCustomer() const { return PairedCustomer; }
-	bool IsPaired() const { return PairedCustomer != nullptr; }
-	void SetPairOffset(float Offset);
+    // State management
+    void SetCustomerState(ECustomerState NewState);
+    ECustomerState GetCustomerState() const { return CurrentState; }
 
-	// Selection
-	void SetCustomerSelected(bool bIsSelected);
-	bool IsCustomerSelected() const { return bSelected; }
+    // Position target
+    void SetTargetPosition(const FVector& Target);
+    FVector GetTargetPosition() const { return TargetPosition; }
 
-	// Click handling
-	virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
+    // Pair management
+    void SetPairedCustomer(ACustomer* InPair);
+    ACustomer* GetPairedCustomer() const { return PairedCustomer; }
+    bool IsPaired() const { return PairedCustomer != nullptr; }
+    void SetPairOffset(float Offset);
+
+    // Selection
+    void SetCustomerSelected(bool bIsSelected);
+    bool IsCustomerSelected() const { return bSelected; }
+
+    // Click handling
+    virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
+
+    // Public delegate others can bind to
+    UPROPERTY(BlueprintAssignable)
+    FSpawnBubbleDelegate OnBubbleSpawned;
 
 protected:
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float WalkSpeed = 150.0f;
+    UPROPERTY(BlueprintReadWrite, Category = "Movement")
+    float WalkSpeed = 150.0f;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Movement")
-	float RotationSpeed = 5.0f;
+    UPROPERTY(BlueprintReadWrite, Category = "Movement")
+    float RotationSpeed = 5.0f;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Queue")
-	int32 QueuePosition = -1;
+    UPROPERTY(BlueprintReadWrite, Category = "Queue")
+    int32 QueuePosition = -1;
 
 private:
-	UPROPERTY()
-	ECustomerState CurrentState;
+    UPROPERTY()
+    ECustomerState CurrentState;
 
-	UPROPERTY()
-	TObjectPtr<ACustomer> PairedCustomer = nullptr;
+    UPROPERTY()
+    TObjectPtr<ACustomer> PairedCustomer = nullptr;
 
-	UPROPERTY()
-	float PairOffset;
+    TSubclassOf<UUserWidget> BubbleWidget;
 
-	UPROPERTY()
-	FVector TargetPosition;
+    UPROPERTY()
+    float PairOffset;
 
-	UPROPERTY()
-	FVector Velocity;
+    UPROPERTY()
+    FVector TargetPosition;
 
-	UPROPERTY()
-	bool bMovingToTarget;
+    UPROPERTY()
+    FVector Velocity;
 
-	UPROPERTY()
-	float DistanceThreshold = 10.0f;
+    UPROPERTY()
+    bool bMovingToTarget;
 
-	UPROPERTY()
-	bool bSelected = false;
+    UPROPERTY()
+    float DistanceThreshold = 10.0f;
 
-	void UpdateMovement(float DeltaTime);
-	bool HasReachedTarget() const;
+    UPROPERTY()
+    bool bSelected = false;
+
+    UPROPERTY()
+    bool bHasShownBubble = false;
+
+    UPROPERTY()
+    TObjectPtr<UUserWidget> Bubble;
+
+    FTimerHandle TimerHandle;
+
+    void UpdateMovement(float DeltaTime);
+    bool HasReachedTarget() const;
+    void OnCustomerBubbleSpawned();
+    void HideBubble();
 };

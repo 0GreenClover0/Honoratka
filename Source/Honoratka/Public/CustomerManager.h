@@ -8,82 +8,86 @@
 USTRUCT()
 struct FCustomerSlot
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY()
-	TObjectPtr<ACustomer> Customer;
+    UPROPERTY()
+    TObjectPtr<ACustomer> Customer;
 
-	UPROPERTY()
-	FVector QueuePosition;
+    UPROPERTY()
+    FVector QueuePosition;
 };
 
 UCLASS()
 class HONORATKA_API ACustomerManager : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	ACustomerManager();
+    GENERATED_BODY()
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+public:
+    ACustomerManager();
 
-	// Configuration
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
-	TSubclassOf<ACustomer> CustomerPrefab;
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
-	float MinSpawnInterval = 3.0f;
+    // Configuration
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    TSubclassOf<ACustomer> CustomerPrefab;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
-	float MaxSpawnInterval = 8.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    float MinSpawnInterval = 3.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
-	float PairSpawnChance = 0.5f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    float MaxSpawnInterval = 8.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
-	float QueueSpacing = 80.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    float PairSpawnChance = 0.5f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
-	FVector QueueDirection = FVector(0, 1, 0);
+    // Customer bubble reference
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    TSubclassOf<UUserWidget> BubbleWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
-	float PairSideOffset = 50.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
+    float QueueSpacing = 80.0f;
 
-	// Spawn point
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")
-	TObjectPtr<USceneComponent> CustomerSpawnPoint;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
+    FVector QueueDirection = FVector(0, 1, 0);
 
-	// First customer point
-	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")
-	TObjectPtr<USceneComponent> CustomerQueueFrontPoint;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
+    float PairSideOffset = 50.0f;
 
-	// Queue management
-	void MoveQueueForward();
-	void RemoveCustomerFromQueue(ACustomer* Customer);
-	int32 GetQueueLength() const { return CustomerQueue.Num(); }
-	ACustomer* GetFirstCustomerInQueue() const;
+    // Spawn point
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")
+    TObjectPtr<USceneComponent> CustomerSpawnPoint;
 
-	// Debugging
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
-	bool bDebugDrawQueue = false;
+    // First customer point
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")
+    TObjectPtr<USceneComponent> CustomerQueueFrontPoint;
+
+    // Queue management
+    void MoveQueueForward();
+    void RemoveCustomerFromQueue(ACustomer* Customer);
+    int32 GetQueueLength() const { return CustomerQueue.Num(); }
+    ACustomer* GetFirstCustomerInQueue() const;
+
+    // Debugging
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
+    bool bDebugDrawQueue = false;
 
 protected:
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
-	UPROPERTY()
-	TArray<FCustomerSlot> CustomerQueue;
+    UPROPERTY()
+    TArray<FCustomerSlot> CustomerQueue;
 
-	float TimeSinceLastSpawn;
-	float NextSpawnTime;
+    float TimeSinceLastSpawn;
+    float NextSpawnTime;
 
-	void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
-	void SpawnCustomerGroup();
-	void UpdateQueuePositions();
-	FVector GetQueuePositionForIndex(int32 Index) const;
+    void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
+    void SpawnCustomerGroup();
+    void UpdateQueuePositions();
+    FVector GetQueuePositionForIndex(int32 Index) const;
 
 #if WITH_EDITOR
-	void DebugDrawQueue() const;
+    void DebugDrawQueue() const;
 #endif
 };
