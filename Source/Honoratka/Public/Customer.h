@@ -42,8 +42,14 @@ public:
 	void SetPairedCustomer(ACustomer* InPair);
 	ACustomer* GetPairedCustomer() const { return PairedCustomer; }
 	bool IsPaired() const { return PairedCustomer != nullptr; }
-
 	void SetPairOffset(float Offset);
+
+	// Selection
+	void SetCustomerSelected(bool bIsSelected);
+	bool IsCustomerSelected() const { return bSelected; }
+
+	// Click handling
+	virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
@@ -76,6 +82,9 @@ private:
 
 	UPROPERTY()
 	float DistanceThreshold = 10.0f;
+
+	UPROPERTY()
+	bool bSelected = false;
 
 	void UpdateMovement(float DeltaTime);
 	bool HasReachedTarget() const;

@@ -25,41 +25,6 @@ void AGameManager::BeginPlay()
 void AGameManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	SelectFirstCustomerGroup();
-}
-
-void AGameManager::SelectFirstCustomerGroup()
-{
-	if (!CustomerManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GameManager: CustomerManager not assigned!"));
-		return;
-	}
-
-	// Deselect previous selection
-	DeselectCustomers();
-
-	// Get first customer group from queue
-	if (CustomerManager->GetQueueLength() > 0)
-	{
-		// Get the first customer in queue
-		ACustomer* FirstCustomer = CustomerManager->GetFirstCustomerInQueue();
-		
-		if (FirstCustomer)
-		{
-			SelectedCustomers.Add(FirstCustomer);
-			
-			// If customer has a pair, add them too
-			if (FirstCustomer->IsPaired() && FirstCustomer->GetPairedCustomer())
-			{
-				SelectedCustomers.Add(FirstCustomer->GetPairedCustomer());
-			}
-
-			HighlightCustomers(true);
-			UE_LOG(LogTemp, Log, TEXT("Selected %d customer(s)"), SelectedCustomers.Num());
-		}
-	}
 }
 
 void AGameManager::DeselectCustomers()
@@ -88,27 +53,53 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
 		return;
 	}
 
-	// Only allow reseating customers that are already seated
-	if (Customer->GetCustomerState() != ECustomerState::Seated)
+	ECustomerState State = Customer->GetCustomerState();
+
+	// If customer is in queue, only allow selecting if they're at the front
+	if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
 	{
-		return;
+		ensure(CustomerManager);
+
+		// Check if this customer is the first in queue or paired with the first
+		ACustomer* FirstCustomer = CustomerManager->GetFirstCustomerInQueue();
+		if (!FirstCustomer)
+		{
+			return;
+		}
+
+		// Allow selection only if this is the first customer OR their pair
+		bool IsFirstCustomer = (Customer == FirstCustomer);
+		bool IsPairOfFirst = (FirstCustomer->GetPairedCustomer() == Customer);
+		
+		if (!IsFirstCustomer && !IsPairOfFirst)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Can only seat customers at the front of the queue!"));
+			return;
+		}
 	}
 
 	// Deselect previous selection
 	DeselectCustomers();
 
-	// Select this customer (and their pair if they have one)
+	// Select this customer
 	SelectedCustomers.Add(Customer);
-	if (Customer->IsPaired() && Customer->GetPairedCustomer())
+
+	// Store their current table if they're seated
+	if (Customer->GetCustomerState() == ECustomerState::Seated)
 	{
-		SelectedCustomers.Add(Customer->GetPairedCustomer());
+		PreviousTable = FindCustomerTable(Customer);
 	}
 
-	// Store their current table for removal
-	CurrentTable = FindCustomerTable(Customer);
-
 	HighlightCustomers(true);
-	UE_LOG(LogTemp, Log, TEXT("Selected seated customer for reseating"));
+
+	if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Selected customer from queue"));
+	}
+	else if (State == ECustomerState::Seated)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Selected seated customer for reseating"));
+	}
 }
 
 void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
@@ -125,18 +116,26 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
 	}
 
 	// If reseating from another table, remove them first
-	if (CurrentTable)
+	if (PreviousTable)
 	{
 		for (ACustomer* Customer : SelectedCustomers)
 		{
-			CurrentTable->RemoveCustomer(Customer);
+			PreviousTable->RemoveCustomer(Customer);
 		}
-		CurrentTable = nullptr;
+
+		PreviousTable = nullptr;
 	}
 	else
 	{
-		// Remove from queue if they're coming from queue
-		CustomerManager->MoveQueueForward();
+		// Coming from queue - remove only the selected customer from queue
+		if (SelectedCustomers.Num() > 0 && SelectedCustomers[0])
+		{
+			ECustomerState State = SelectedCustomers[0]->GetCustomerState();
+			if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
+			{
+				CustomerManager->RemoveCustomerFromQueue(SelectedCustomers[0]);
+			}
+		}
 	}
 
 	// Seat customers at table
@@ -155,7 +154,7 @@ void AGameManager::HighlightCustomers(bool bHighlight)
 	{
 		if (Customer)
 		{
-			//Customer->SetSelected(bHighlight);
+			Customer->SetCustomerSelected(bHighlight);
 		}
 	}
 }
@@ -168,23 +167,11 @@ AHonoratkaTable* AGameManager::FindCustomerTable(ACustomer* Customer) const
 	for (AActor* Actor : Tables)
 	{
 		AHonoratkaTable* Table = Cast<AHonoratkaTable>(Actor);
-		if (Table)
+		if (Table && Table->HasCustomer(Customer))
 		{
-			// Check if this table has the customer
-			for (int32 i = 0; i < Table->GetOccupiedSeats(); ++i)
-			{
-				// This is a simplified check - you might need to add a proper getter
-				// For now, we'll just return the first table we find
-			}
+			return Table;
 		}
 	}
 
 	return nullptr;
-}
-
-void AGameManager::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	// Bind input for selecting first customer group
-	// You can bind a key here, e.g., Space bar
-	// PlayerInputComponent->BindAction("SelectCustomers", IE_Pressed, this, &AGameManager::SelectFirstCustomerGroup);
 }

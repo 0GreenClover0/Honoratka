@@ -117,6 +117,19 @@ int32 AHonoratkaTable::GetOccupiedSeats() const
 	return MaxSeats - GetAvailableSeats();
 }
 
+bool AHonoratkaTable::HasCustomer(ACustomer* Customer) const
+{
+	for (const FTableSeat& Seat : Seats)
+	{
+		if (Seat.Customer == Customer)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void AHonoratkaTable::NotifyActorOnClicked(FKey ButtonPressed)
 {
 	Super::NotifyActorOnClicked(ButtonPressed);

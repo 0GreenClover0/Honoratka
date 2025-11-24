@@ -1,5 +1,8 @@
 #include "Customer.h"
 
+#include "GameManager.h"
+#include "Kismet/GameplayStatics.h"
+
 ACustomer::ACustomer()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -68,6 +71,22 @@ void ACustomer::SetPairedCustomer(ACustomer* InPair)
 void ACustomer::SetPairOffset(float Offset)
 {
 	PairOffset = Offset;
+}
+
+void ACustomer::SetCustomerSelected(bool bIsSelected)
+{
+	bSelected = bIsSelected;
+}
+
+void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
+{
+	Super::NotifyActorOnClicked(ButtonPressed);
+
+	AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+	if (GameManager)
+	{
+		GameManager->OnCustomerClicked(this);
+	}
 }
 
 void ACustomer::UpdateMovement(float DeltaTime)

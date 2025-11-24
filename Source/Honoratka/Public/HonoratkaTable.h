@@ -42,6 +42,7 @@ public:
 	int32 GetOccupiedSeats() const;
 	bool IsTableFull() const { return GetAvailableSeats() == 0; }
 	bool IsTableEmpty() const { return GetOccupiedSeats() == 0; }
+	bool HasCustomer(ACustomer* Customer) const;
 
 	// Click handling
 	virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
@@ -52,9 +53,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Table")
 	float SeatRadius = 60.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> TableMesh;
 
 private:
 	UPROPERTY()

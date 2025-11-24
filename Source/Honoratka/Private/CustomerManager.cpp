@@ -163,13 +163,52 @@ ACustomer* ACustomerManager::GetFirstCustomerInQueue() const
 
 void ACustomerManager::RemoveCustomerFromQueue(ACustomer* Customer)
 {
+	if (!Customer)
+	{
+		return;
+	}
+
+	// Check if this customer is a paired customer (secondary)
+	// If so, we need to find their pair in the queue
 	for (int32 i = 0; i < CustomerQueue.Num(); ++i)
 	{
 		if (CustomerQueue[i].Customer == Customer)
 		{
-			CustomerQueue.RemoveAt(i);
+			// This is the primary customer in queue
+			// Check if they have a pair
+			ACustomer* PairedCustomer = Customer->GetPairedCustomer();
+			
+			if (PairedCustomer)
+			{
+				// Unpair them
+				Customer->SetPairedCustomer(nullptr);
+				PairedCustomer->SetPairedCustomer(nullptr);
+				
+				// Make the secondary customer the new primary in this slot
+				CustomerQueue[i].Customer = PairedCustomer;
+				
+				// Recenter the now-solo customer
+				SetCustomerGroupPosition(PairedCustomer, CustomerQueue[i].QueuePosition);
+			}
+			else
+			{
+				// No pair, just remove from queue
+				CustomerQueue.RemoveAt(i);
+			}
+			
 			UpdateQueuePositions();
-			break;
+			return;
+		}
+		else if (CustomerQueue[i].Customer && CustomerQueue[i].Customer->GetPairedCustomer() == Customer)
+		{
+			// This is the secondary customer - their pair is in the queue
+			// Unpair them and recenter the primary
+			CustomerQueue[i].Customer->SetPairedCustomer(nullptr);
+			Customer->SetPairedCustomer(nullptr);
+			
+			// Recenter the primary customer
+			SetCustomerGroupPosition(CustomerQueue[i].Customer, CustomerQueue[i].QueuePosition);
+			return;
 		}
 	}
 }

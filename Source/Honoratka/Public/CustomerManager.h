@@ -60,6 +60,7 @@ public:
 
 	// Queue management
 	void MoveQueueForward();
+	void RemoveCustomerFromQueue(ACustomer* Customer);
 	int32 GetQueueLength() const { return CustomerQueue.Num(); }
 	ACustomer* GetFirstCustomerInQueue() const;
 
@@ -80,7 +81,6 @@ private:
 	void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
 	void SpawnCustomerGroup();
 	void UpdateQueuePositions();
-	void RemoveCustomerFromQueue(ACustomer* Customer);
 	FVector GetQueuePositionForIndex(int32 Index) const;
 
 #if WITH_EDITOR

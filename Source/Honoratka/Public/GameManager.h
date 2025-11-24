@@ -20,7 +20,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Selection system
-	void SelectFirstCustomerGroup();
 	void DeselectCustomers();
 	bool HasSelectedCustomers() const { return SelectedCustomers.Num() > 0; }
 
@@ -32,18 +31,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
 	TObjectPtr<ACustomerManager> CustomerManager;
 
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
-
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<ACustomer>> SelectedCustomers;
 
 	UPROPERTY()
-	TObjectPtr<AHonoratkaTable> CurrentTable;
+	TObjectPtr<AHonoratkaTable> PreviousTable;
 
 	void AssignCustomersToTable(AHonoratkaTable* Table);
-	//void ReassignCustomerToTable(ACustomer* Customer, AHonoratkaTable* NewTable);
 	void HighlightCustomers(bool bHighlight);
 	AHonoratkaTable* FindCustomerTable(ACustomer* Customer) const;
 };
