@@ -10,7 +10,7 @@ enum class ECustomerState : uint8
 	Idle = 0,
 	WaitingInQueue = 1,
 	MovingForward = 2,
-	AtCounter = 3,
+	Seated = 3,
 	Leaving = 4
 };
 
@@ -78,6 +78,5 @@ private:
 	float DistanceThreshold = 10.0f;
 
 	void UpdateMovement(float DeltaTime);
-	void TurnTowardTarget(float DeltaTime);
 	bool HasReachedTarget() const;
 };
