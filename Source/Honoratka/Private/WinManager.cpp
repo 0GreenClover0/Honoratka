@@ -30,7 +30,7 @@ void AWinManager::BeginPlay()
 
 void AWinManager::HandleTimerFinished()
 {
-    UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
+    //UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
 }
 
 void AWinManager::Tick(float DeltaTime)
