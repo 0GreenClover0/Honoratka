@@ -4,6 +4,8 @@
 #include "GameFramework/Character.h"
 #include "Customer.generated.h"
 
+class AHonoratkaTable;
+
 UENUM(BlueprintType)
 enum class ECustomerState : uint8
 {
@@ -60,6 +62,10 @@ public:
     // Public delegate others can bind to
     UPROPERTY(BlueprintAssignable)
     FSpawnBubbleDelegate OnBubbleSpawned;
+
+public:
+	UPROPERTY()
+    TObjectPtr<AHonoratkaTable> Table = nullptr;
 
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")

@@ -1,5 +1,7 @@
 #include "CustomerManager.h"
 
+#include "CustomerWork.h"
+
 ACustomerManager::ACustomerManager()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -86,6 +88,7 @@ void ACustomerManager::SpawnCustomerGroup()
         ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
         NewCustomer->SetPairOffset(PairSideOffset);
         NewCustomer->SetWidgetClass(BubbleWidget);
+        NewCustomer->GetComponentByClass<UCustomerWork>()->GreatWork = GreatCustomerWorks[FMath::RandRange(0, GreatCustomerWorks.Num() - 1)];
 
         if (NewCustomer)
         {

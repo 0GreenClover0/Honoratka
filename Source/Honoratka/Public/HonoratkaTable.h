@@ -40,6 +40,7 @@ public:
 	// Getters
 	int32 GetAvailableSeats() const;
 	int32 GetOccupiedSeats() const;
+	TArray<ACustomer*> GetCustomers() const;
 	bool IsTableFull() const { return GetAvailableSeats() == 0; }
 	bool IsTableEmpty() const { return GetOccupiedSeats() == 0; }
 	bool HasCustomer(ACustomer* Customer) const;
