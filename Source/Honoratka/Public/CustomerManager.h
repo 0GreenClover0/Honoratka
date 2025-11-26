@@ -5,6 +5,8 @@
 #include "Customer.h"
 #include "CustomerManager.generated.h"
 
+class UCustomerGreatWorkWidget;
+
 USTRUCT()
 struct FCustomerSlot
 {
@@ -17,6 +19,18 @@ struct FCustomerSlot
     FVector QueuePosition;
 };
 
+USTRUCT(BlueprintType)
+struct FGreatCustomerWork
+{
+	GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UTexture2D> PosterTexture;
+
+    UPROPERTY(EditAnywhere)
+    FText Description;
+};
+
 UCLASS()
 class HONORATKA_API ACustomerManager : public AActor
 {
@@ -27,6 +41,9 @@ public:
 
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Works")
+    TArray<FGreatCustomerWork> GreatCustomerWorks = {};
 
     // Configuration
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
@@ -42,8 +59,11 @@ public:
     float PairSpawnChance = 0.5f;
 
     // Customer bubble reference
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UUserWidget> BubbleWidget;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UCustomerGreatWorkWidget> GreatWorkWidgetClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
     float QueueSpacing = 80.0f;

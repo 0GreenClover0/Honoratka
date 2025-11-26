@@ -74,6 +74,7 @@ bool AHonoratkaTable::SeatCustomers(TArray<ACustomer*> Customers)
         Customer->SetCustomerState(ECustomerState::Seated);
         Customer->SetShowingBubble();
         Customer->SetTargetPosition(Seats[SeatIndex].SeatPosition);
+        Customer->Table = this;
         SeatIndex++;
     }
 
@@ -87,6 +88,7 @@ void AHonoratkaTable::RemoveCustomer(ACustomer* Customer)
         if (Seat.Customer == Customer)
         {
             Seat.Customer = nullptr;
+            Customer->Table = nullptr;
             return;
         }
     }
@@ -116,6 +118,21 @@ int32 AHonoratkaTable::GetAvailableSeats() const
 int32 AHonoratkaTable::GetOccupiedSeats() const
 {
     return MaxSeats - GetAvailableSeats();
+}
+
+TArray<ACustomer*> AHonoratkaTable::GetCustomers() const
+{
+    TArray<ACustomer*> Customers;
+
+	for (const FTableSeat& Seat : Seats)
+    {
+        if (Seat.Customer != nullptr)
+        {
+            Customers.Add(Seat.Customer);
+        }
+    }
+
+    return Customers;
 }
 
 bool AHonoratkaTable::HasCustomer(ACustomer* Customer) const
