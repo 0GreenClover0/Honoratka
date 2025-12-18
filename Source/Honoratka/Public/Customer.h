@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Customer.generated.h"
 
+class ACustomerManager;
 class AHonoratkaTable;
 
 UENUM(BlueprintType)
@@ -11,9 +12,8 @@ enum class ECustomerState : uint8
 {
     Idle = 0,
     WaitingInQueue = 1,
-    MovingForward = 2,
-    Seated = 3,
-    Leaving = 4
+    Seated = 2,
+    Leaving = 3
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
@@ -31,8 +31,8 @@ public:
 
     // Queue management
     void SetQueuePosition(int32 Position);
-    void MoveForward();
     void LeaveRestaurant();
+    void SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Position);
 
     // Bubble
     void SetWidgetClass(const TSubclassOf<UUserWidget>& WidgetClass);
@@ -55,6 +55,9 @@ public:
     // Selection
     void SetCustomerSelected(bool bIsSelected);
     bool IsCustomerSelected() const { return bSelected; }
+
+    void SetLeaveTargetPosition(FVector const& Position);
+    void SetCustomerManager(ACustomerManager* NewCustomerManager);
 
     // Click handling
     virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
@@ -79,6 +82,9 @@ protected:
 
 private:
     UPROPERTY()
+    ACustomerManager* CustomerManager;
+
+    UPROPERTY()
     ECustomerState CurrentState;
 
     UPROPERTY()
@@ -98,6 +104,7 @@ private:
     UPROPERTY()
     bool bMovingToTarget;
 
+    // Distance to the target threshold.
     UPROPERTY()
     float DistanceThreshold = 10.0f;
 
@@ -110,8 +117,19 @@ private:
     UPROPERTY()
     TObjectPtr<UUserWidget> Bubble;
 
+    UPROPERTY()
+    float AngryCounter = 0.0f;
+
+    // Threshold of angriness (in seconds) for the customer to leave.
+    UPROPERTY()
+    float AngryThreshold = 30.0f;
+
+    UPROPERTY()
+    FVector LeaveTargetPosition;
+
     FTimerHandle TimerHandle;
 
+    void UpdateAngriness(float DeltaTime);
     void UpdateMovement(float DeltaTime);
     bool HasReachedTarget() const;
     void OnCustomerBubbleSpawned();

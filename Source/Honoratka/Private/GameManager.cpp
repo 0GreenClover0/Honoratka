@@ -56,7 +56,7 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
     ECustomerState State = Customer->GetCustomerState();
 
     // If customer is in queue, only allow selecting if they're at the front
-    if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
+    if (State == ECustomerState::WaitingInQueue)
     {
         ensure(CustomerManager);
 
@@ -92,7 +92,7 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
 
     HighlightCustomers(true);
 
-    if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
+    if (State == ECustomerState::WaitingInQueue)
     {
         UE_LOG(LogTemp, Log, TEXT("Selected customer from queue"));
     }
@@ -131,7 +131,7 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
         if (SelectedCustomers.Num() > 0 && SelectedCustomers[0])
         {
             ECustomerState State = SelectedCustomers[0]->GetCustomerState();
-            if (State == ECustomerState::WaitingInQueue || State == ECustomerState::MovingForward)
+            if (State == ECustomerState::WaitingInQueue)
             {
                 CustomerManager->RemoveCustomerFromQueue(SelectedCustomers[0]);
             }

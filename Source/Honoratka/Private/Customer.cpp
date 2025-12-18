@@ -1,5 +1,6 @@
 #include "Customer.h"
 
+#include "CustomerManager.h"
 #include "GameManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -22,10 +23,17 @@ void ACustomer::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (CurrentState == ECustomerState::Leaving && HasReachedTarget())
+    {
+	    Destroy();
+    }
+
     if (bMovingToTarget)
     {
         UpdateMovement(DeltaTime);
     }
+
+    UpdateAngriness(DeltaTime);
 }
 
 void ACustomer::SetQueuePosition(int32 Position)
@@ -33,17 +41,29 @@ void ACustomer::SetQueuePosition(int32 Position)
     QueuePosition = Position;
 }
 
-void ACustomer::MoveForward()
-{
-    if (CurrentState == ECustomerState::WaitingInQueue || CurrentState == ECustomerState::MovingForward)
-    {
-        SetCustomerState(ECustomerState::MovingForward);
-    }
-}
-
 void ACustomer::LeaveRestaurant()
 {
+	if (CurrentState == ECustomerState::WaitingInQueue)
+	{
+		CustomerManager->RemoveCustomerFromQueue(this);
+	}
+
     SetCustomerState(ECustomerState::Leaving);
+    SetTargetPosition(LeaveTargetPosition);
+}
+
+void ACustomer::SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Position)
+{
+    // If we've just been seated for the first time, reset angriness counter.
+    if (CurrentState != ECustomerState::Seated)
+    {
+	    AngryCounter = 0.0f;
+    }
+
+	SetCustomerState(ECustomerState::Seated);
+	SetShowingBubble();
+	SetTargetPosition(Position);
+	Table = TableToSeat;
 }
 
 void ACustomer::SetWidgetClass(const TSubclassOf<UUserWidget>& WidgetClass)
@@ -84,6 +104,16 @@ void ACustomer::SetCustomerSelected(bool bIsSelected)
     bSelected = bIsSelected;
 }
 
+void ACustomer::SetLeaveTargetPosition(FVector const& Position)
+{
+    LeaveTargetPosition = Position;
+}
+
+void ACustomer::SetCustomerManager(ACustomerManager* NewCustomerManager)
+{
+    CustomerManager = NewCustomerManager;
+}
+
 void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
 {
     Super::NotifyActorOnClicked(ButtonPressed);
@@ -92,6 +122,27 @@ void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
     if (GameManager)
     {
         GameManager->OnCustomerClicked(this);
+    }
+}
+
+void ACustomer::UpdateAngriness(float DeltaTime)
+{
+    if (CurrentState == ECustomerState::WaitingInQueue)
+    {
+        // NOTE: Only the first customer (and their pair) in the queue are getting angry.
+        ACustomer* FirstCustomer = CustomerManager->GetFirstCustomerInQueue();
+        bool IsFirstCustomer = (this == FirstCustomer);
+        bool IsPairOfFirst = (FirstCustomer->GetPairedCustomer() == this);
+
+        if (IsFirstCustomer || IsPairOfFirst)
+        {
+			AngryCounter += DeltaTime;
+        }
+    }
+
+    if (AngryCounter > AngryThreshold)
+    {
+	    LeaveRestaurant();
     }
 }
 

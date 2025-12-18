@@ -86,6 +86,8 @@ void ACustomerManager::SpawnCustomerGroup()
         }
 
         ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
+        NewCustomer->SetLeaveTargetPosition(SpawnLocation);
+        NewCustomer->SetCustomerManager(this);
         NewCustomer->SetPairOffset(PairSideOffset);
         NewCustomer->SetWidgetClass(BubbleWidget);
         NewCustomer->GetComponentByClass<UCustomerWork>()->GreatWork = GreatCustomerWorks[FMath::RandRange(0, GreatCustomerWorks.Num() - 1)];
@@ -129,8 +131,7 @@ void ACustomerManager::UpdateQueuePositions()
             CustomerQueue[i].QueuePosition = TargetPos;
 
             // Only update target if customer is waiting or in queue
-            if (CustomerQueue[i].Customer->GetCustomerState() == ECustomerState::WaitingInQueue ||
-                CustomerQueue[i].Customer->GetCustomerState() == ECustomerState::MovingForward)
+            if (CustomerQueue[i].Customer->GetCustomerState() == ECustomerState::WaitingInQueue)
             {
                 SetCustomerGroupPosition(CustomerQueue[i].Customer, TargetPos);
             }

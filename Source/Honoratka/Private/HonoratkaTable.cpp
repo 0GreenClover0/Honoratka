@@ -71,10 +71,7 @@ bool AHonoratkaTable::SeatCustomers(TArray<ACustomer*> Customers)
         }
 
         Seats[SeatIndex].Customer = Customer;
-        Customer->SetCustomerState(ECustomerState::Seated);
-        Customer->SetShowingBubble();
-        Customer->SetTargetPosition(Seats[SeatIndex].SeatPosition);
-        Customer->Table = this;
+        Customer->SeatCustomer(this, Seats[SeatIndex].SeatPosition);
         SeatIndex++;
     }
 
