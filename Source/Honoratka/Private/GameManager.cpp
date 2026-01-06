@@ -102,6 +102,23 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
     }
 }
 
+void AGameManager::Pause()
+{
+    bIsPaused = true;
+    UGameplayStatics::SetGamePaused(GetWorld(), true);
+}
+
+void AGameManager::Resume()
+{
+    bIsPaused = false;
+    UGameplayStatics::SetGamePaused(GetWorld(), false);
+}
+
+bool AGameManager::IsPaused() const
+{
+    return bIsPaused;
+}
+
 void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
 {
     ensure(Table);

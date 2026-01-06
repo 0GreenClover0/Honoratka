@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Customer.generated.h"
 
+class AGameManager;
 class UCustomerBubbleWidget;
 enum class EFoodType : uint8;
 class ACustomerManager;
@@ -84,6 +85,9 @@ protected:
     int32 QueuePosition = -1;
 
 private:
+    UPROPERTY()
+    AGameManager* GameManager = nullptr;
+
     UPROPERTY()
     ACustomerManager* CustomerManager;
 

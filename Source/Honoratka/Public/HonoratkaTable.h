@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "HonoratkaTable.generated.h"
 
+class AGameManager;
 class ACustomer;
 
 USTRUCT()
@@ -56,6 +57,9 @@ protected:
 	float SeatRadius = 60.0f;
 
 private:
+    UPROPERTY()
+    AGameManager* GameManager = nullptr;
+
 	UPROPERTY()
 	TArray<FTableSeat> Seats;
 

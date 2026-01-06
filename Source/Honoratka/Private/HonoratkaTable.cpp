@@ -11,6 +11,9 @@ AHonoratkaTable::AHonoratkaTable()
 void AHonoratkaTable::BeginPlay()
 {
     Super::BeginPlay();
+
+    GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+
     InitializeSeats();
 }
 
@@ -147,11 +150,12 @@ bool AHonoratkaTable::HasCustomer(ACustomer* Customer) const
 
 void AHonoratkaTable::NotifyActorOnClicked(FKey ButtonPressed)
 {
+    if (GameManager->IsPaused())
+    {
+        return;
+    }
+
     Super::NotifyActorOnClicked(ButtonPressed);
 
-    AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
-    if (GameManager)
-    {
-        GameManager->OnTableClicked(this);
-    }
+    GameManager->OnTableClicked(this);
 }

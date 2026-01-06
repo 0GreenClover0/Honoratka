@@ -18,6 +18,8 @@ void ACustomer::BeginPlay()
     CurrentState = ECustomerState::Idle;
     Velocity = FVector::ZeroVector;
     bMovingToTarget = false;
+
+    GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
 }
 
 void ACustomer::Tick(float DeltaTime)
@@ -118,13 +120,14 @@ void ACustomer::SetCustomerManager(ACustomerManager* NewCustomerManager)
 
 void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
 {
+    if (GameManager->IsPaused())
+    {
+        return;
+    }
+
     Super::NotifyActorOnClicked(ButtonPressed);
 
-    AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
-    if (GameManager)
-    {
-        GameManager->OnCustomerClicked(this);
-    }
+    GameManager->OnCustomerClicked(this);
 }
 
 void ACustomer::UpdateAngriness(float DeltaTime)
@@ -187,16 +190,11 @@ void ACustomer::SetShowingBubble()
 void ACustomer::SelectDesiredFoodItem()
 {
     // Choose random food item.
-    AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+    int32 FoodIndex = FMath::RandRange(0, GameManager->FoodItems.Num() - 1);
+    DesiredFoodType = GameManager->FoodItems[FoodIndex].FoodType;
+    DesiredFoodTexture = GameManager->FoodItems[FoodIndex].Texture;
 
-    if (GameManager)
-    {
-        int32 FoodIndex = FMath::RandRange(0, GameManager->FoodItems.Num() - 1);
-        DesiredFoodType = GameManager->FoodItems[FoodIndex].FoodType;
-        DesiredFoodTexture = GameManager->FoodItems[FoodIndex].Texture;
-
-        SetShowingBubble();
-    }
+    SetShowingBubble();
 }
 
 void ACustomer::OnCustomerBubbleSpawned()

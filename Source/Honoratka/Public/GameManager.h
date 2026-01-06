@@ -47,6 +47,10 @@ public:
     void OnTableClicked(AHonoratkaTable* Table);
     void OnCustomerClicked(ACustomer* Customer);
 
+    void Pause();
+    void Resume();
+    bool IsPaused() const;
+
     // Customer manager reference
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
     TObjectPtr<ACustomerManager> CustomerManager;
@@ -55,6 +59,8 @@ public:
     TArray<FFoodItem> FoodItems;
 
 private:
+    bool bIsPaused = false;
+
     UPROPERTY()
     TArray<TObjectPtr<ACustomer>> SelectedCustomers;
 

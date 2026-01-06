@@ -29,8 +29,6 @@ protected:
 	UPROPERTY()
 	float WorkProgress = 0.0f;
 
-	float DebugTime = 8.0f;
-
 	UPROPERTY(EditAnywhere)
 	float WorkSpeed = 10.0f;
 

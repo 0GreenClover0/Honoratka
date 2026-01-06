@@ -29,13 +29,6 @@ void UCustomerWork::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 	if (bWorkFinished)
 	{
-		DebugTime -= DeltaTime;
-
-		if (DebugTime < 0.0f && GreatWorkWidget != nullptr)
-		{
-			GreatWorkWidget->RemoveFromParent();
-		}
-
 		return;
 	}
 

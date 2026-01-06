@@ -11,6 +11,10 @@ UCLASS(abstract)
 class HONORATKA_API UCustomerGreatWorkWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+private:
+    virtual void NativeConstruct() override;
+    virtual void NativeDestruct() override;
 	
 public:
 	UFUNCTION(BlueprintImplementableEvent)
