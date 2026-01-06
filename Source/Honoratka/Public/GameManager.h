@@ -8,6 +8,26 @@ class ACustomer;
 class AHonoratkaTable;
 class ACustomerManager;
 
+UENUM(BlueprintType)
+enum class EFoodType : uint8
+{
+    None = 0,
+    Coffee = 1,
+    Cake = 2,
+};
+
+USTRUCT(BlueprintType)
+struct FFoodItem
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UTexture2D> Texture;
+
+    UPROPERTY(EditAnywhere)
+    EFoodType FoodType;
+};
+
 UCLASS()
 class HONORATKA_API AGameManager : public AActor
 {
@@ -30,6 +50,9 @@ public:
     // Customer manager reference
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
     TObjectPtr<ACustomerManager> CustomerManager;
+
+    UPROPERTY(EditAnywhere)
+    TArray<FFoodItem> FoodItems;
 
 private:
     UPROPERTY()

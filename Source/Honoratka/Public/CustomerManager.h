@@ -5,6 +5,7 @@
 #include "Customer.h"
 #include "CustomerManager.generated.h"
 
+class UCustomerBubbleWidget;
 class UCustomerGreatWorkWidget;
 
 USTRUCT()
@@ -60,7 +61,7 @@ public:
 
     // Customer bubble reference
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<UUserWidget> BubbleWidget;
+    TSubclassOf<UCustomerBubbleWidget> BubbleWidget;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UCustomerGreatWorkWidget> GreatWorkWidgetClass;

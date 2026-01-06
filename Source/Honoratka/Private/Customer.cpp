@@ -1,5 +1,6 @@
 #include "Customer.h"
 
+#include "CustomerBubbleWidget.h"
 #include "CustomerManager.h"
 #include "GameManager.h"
 #include "Blueprint/UserWidget.h"
@@ -54,19 +55,20 @@ void ACustomer::LeaveRestaurant()
 
 void ACustomer::SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Position)
 {
-    // If we've just been seated for the first time, reset angriness counter.
+    // If we've just been seated for the first time, reset angriness counter and select desired food item.
     if (CurrentState != ECustomerState::Seated)
     {
-	    AngryCounter = 0.0f;
+        AngryCounter = 0.0f;
+
+        SelectDesiredFoodItem();
     }
 
-	SetCustomerState(ECustomerState::Seated);
-	SetShowingBubble();
-	SetTargetPosition(Position);
-	Table = TableToSeat;
+    SetCustomerState(ECustomerState::Seated);
+    SetTargetPosition(Position);
+    Table = TableToSeat;
 }
 
-void ACustomer::SetWidgetClass(const TSubclassOf<UUserWidget>& WidgetClass)
+void ACustomer::SetWidgetClass(const TSubclassOf<UCustomerBubbleWidget>& WidgetClass)
 {
     BubbleWidget = WidgetClass;
 }
@@ -168,7 +170,7 @@ bool ACustomer::HasReachedTarget() const
 
 void ACustomer::SetShowingBubble()
 {
-    float InitialInterval = FMath::RandRange(3.1f, 10.0f);
+    float InitialInterval = 6.0f;
 
     GetWorld()->GetTimerManager().SetTimer
     (
@@ -182,20 +184,30 @@ void ACustomer::SetShowingBubble()
     bHasShownBubble = true;
 }
 
+void ACustomer::SelectDesiredFoodItem()
+{
+    // Choose random food item.
+    AGameManager* GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+
+    if (GameManager)
+    {
+        int32 FoodIndex = FMath::RandRange(0, GameManager->FoodItems.Num() - 1);
+        DesiredFoodType = GameManager->FoodItems[FoodIndex].FoodType;
+        DesiredFoodTexture = GameManager->FoodItems[FoodIndex].Texture;
+
+        SetShowingBubble();
+    }
+}
+
 void ACustomer::OnCustomerBubbleSpawned()
 {
     TimerHandle.Invalidate();
 
     FVector WorldLocation = GetActorLocation();
 
-    FVector2D ScreenPos;
-    APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    Bubble = CreateWidget<UUserWidget>(GetWorld(), BubbleWidget);
-    if (PC && PC->ProjectWorldLocationToScreen(WorldLocation, ScreenPos))
-    {
-        Bubble->AddToViewport();
-        Bubble->SetPositionInViewport(ScreenPos, true);
-    }
+    Bubble = CreateWidget<UCustomerBubbleWidget>(GetWorld(), BubbleWidget);
+    Bubble->SetTexture(DesiredFoodTexture);
+    Bubble->SetVisible(true, WorldLocation);
 
     float TimerToShow = 3.0f;
     GetWorld()->GetTimerManager().SetTimer

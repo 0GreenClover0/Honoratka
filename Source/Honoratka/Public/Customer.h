@@ -4,6 +4,8 @@
 #include "GameFramework/Character.h"
 #include "Customer.generated.h"
 
+class UCustomerBubbleWidget;
+enum class EFoodType : uint8;
 class ACustomerManager;
 class AHonoratkaTable;
 
@@ -34,9 +36,10 @@ public:
     void LeaveRestaurant();
     void SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Position);
 
-    // Bubble
-    void SetWidgetClass(const TSubclassOf<UUserWidget>& WidgetClass);
+    // Bubble and Food
+    void SetWidgetClass(const TSubclassOf<UCustomerBubbleWidget>& WidgetClass);
     void SetShowingBubble();
+    void SelectDesiredFoodItem();
 
     // State management
     void SetCustomerState(ECustomerState NewState);
@@ -90,7 +93,7 @@ private:
     UPROPERTY()
     TObjectPtr<ACustomer> PairedCustomer = nullptr;
 
-    TSubclassOf<UUserWidget> BubbleWidget;
+    TSubclassOf<UCustomerBubbleWidget> BubbleWidget;
 
     UPROPERTY()
     float PairOffset;
@@ -115,7 +118,13 @@ private:
     bool bHasShownBubble = false;
 
     UPROPERTY()
-    TObjectPtr<UUserWidget> Bubble;
+    TObjectPtr<UCustomerBubbleWidget> Bubble;
+
+    UPROPERTY()
+    EFoodType DesiredFoodType;
+
+    UPROPERTY()
+    TObjectPtr<UTexture2D> DesiredFoodTexture;
 
     UPROPERTY()
     float AngryCounter = 0.0f;
