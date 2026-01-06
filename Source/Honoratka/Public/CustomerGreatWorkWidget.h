@@ -18,4 +18,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	UTextBlock* GetDescriptionText();
+
+    UFUNCTION(BlueprintCallable)
+    void Close();
 };
