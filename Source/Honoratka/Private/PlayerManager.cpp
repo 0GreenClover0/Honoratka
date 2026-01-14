@@ -24,3 +24,15 @@ void APlayerManager::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
+
+void APlayerManager::Interact(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon)
+{
+    SelectedObject = {
+        .Object = Object,
+        .DisplayedIcon = Icon,
+    };
+
+    PlayerCursor->UpdateCursor(GrabCursorTexture);
+    
+    PlayerCursor->UpdateHeldObjectIcon(Icon);
+}

@@ -4,12 +4,21 @@
 
 void UPlayerCursor::UpdateCursor(UTexture2D* CursorTexture)
 {
-    if (CursorImage == nullptr)
+    ensure(CursorImage);
+
+    CursorImage->SetBrushFromTexture(CursorTexture, true);
+}
+
+void UPlayerCursor::UpdateHeldObjectIcon(UTexture2D* IconTexture)
+{
+    if (!IconTexture)
     {
+        HeldObjectIcon->SetVisibility(ESlateVisibility::Hidden);
         return;
     }
 
-    CursorImage->SetBrushFromTexture(CursorTexture, true);
+    HeldObjectIcon->SetVisibility(ESlateVisibility::Visible);
+    HeldObjectIcon->SetBrushFromTexture(IconTexture, true);
 }
 
 void UPlayerCursor::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
