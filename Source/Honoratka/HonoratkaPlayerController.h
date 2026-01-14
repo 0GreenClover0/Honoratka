@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "HonoratkaPlayerController.generated.h"
 
+class AInteractable;
 class UNiagaraSystem;
 class UInputMappingContext;
 class UInputAction;
@@ -20,18 +21,6 @@ class AHonoratkaPlayerController : public APlayerController
 {
     GENERATED_BODY()
 
-protected:
-    // FX Class that we will spawn when clicking
-    UPROPERTY(EditAnywhere, Category="Input")
-    UNiagaraSystem* FXCursor;
-
-    // MappingContext
-    UPROPERTY(EditAnywhere, Category="Input")
-    UInputMappingContext* DefaultMappingContext;
-
-    UPROPERTY(EditAnywhere, Category="Input")
-    UInputAction* LeftMouseClickAction;
-
 public:
     AHonoratkaPlayerController();
 
@@ -43,4 +32,20 @@ protected:
     void OnLeftMouseClickStarted();
     void OnLeftMouseClickTriggered();
     void OnLeftMouseClickReleased();
+
+protected:
+    // FX Class that we will spawn when clicking
+    UPROPERTY(EditAnywhere, Category="Input")
+    UNiagaraSystem* FXCursor = nullptr;
+
+    // MappingContext
+    UPROPERTY(EditAnywhere, Category="Input")
+    UInputMappingContext* DefaultMappingContext = nullptr;
+
+    UPROPERTY(EditAnywhere, Category="Input")
+    UInputAction* LeftMouseClickAction = nullptr;
+
+private:
+    UPROPERTY()
+    AInteractable* CurrentInteractable = nullptr;
 };

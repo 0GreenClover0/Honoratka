@@ -16,7 +16,11 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
+    UFUNCTION(BlueprintNativeEvent)
+    void Interact();
+
+    UFUNCTION(BlueprintNativeEvent)
+    void Uninteract();
 
 protected:
     virtual void BeginPlay() override;
@@ -25,7 +29,6 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TObjectPtr<UTexture2D> IconWhenGrabbed;
 
-private:
-    UPROPERTY()
+    UPROPERTY(BlueprintReadOnly)
     TObjectPtr<APlayerManager> PlayerManager;
 };

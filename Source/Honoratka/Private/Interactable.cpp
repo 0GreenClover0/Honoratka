@@ -20,9 +20,10 @@ void AInteractable::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void AInteractable::NotifyActorOnClicked(FKey ButtonPressed)
+void AInteractable::Interact_Implementation()
 {
-    Super::NotifyActorOnClicked(ButtonPressed);
+}
 
-    PlayerManager->Interact(this, IconWhenGrabbed);
+void AInteractable::Uninteract_Implementation()
+{
 }

@@ -29,7 +29,8 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
-    void Interact(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon);
+    void SelectObject(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon);
+    void UnselectObject();
 
 protected:
     virtual void BeginPlay() override;

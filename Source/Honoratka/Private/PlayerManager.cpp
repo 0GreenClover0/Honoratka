@@ -25,7 +25,7 @@ void APlayerManager::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void APlayerManager::Interact(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon)
+void APlayerManager::SelectObject(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon)
 {
     SelectedObject = {
         .Object = Object,
@@ -35,4 +35,16 @@ void APlayerManager::Interact(TObjectPtr<AInteractable> Object, TObjectPtr<UText
     PlayerCursor->UpdateCursor(GrabCursorTexture);
     
     PlayerCursor->UpdateHeldObjectIcon(Icon);
+}
+
+void APlayerManager::UnselectObject()
+{
+    SelectedObject = {
+        .Object = nullptr,
+        .DisplayedIcon = nullptr,
+    };
+
+    PlayerCursor->UpdateCursor(DefaultCursorTexture);
+
+    PlayerCursor->UpdateHeldObjectIcon(nullptr);
 }

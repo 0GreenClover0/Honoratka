@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "Honoratka.h"
+#include "Interactable.h"
 
 AHonoratkaPlayerController::AHonoratkaPlayerController()
 {
@@ -45,16 +46,34 @@ void AHonoratkaPlayerController::SetupInputComponent()
 
 void AHonoratkaPlayerController::OnLeftMouseClickStarted()
 {
+    // We look for the location in the world where the player has pressed the input.
+    FHitResult Hit;
+    bool bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+
+    if (!bHitSuccessful || !Hit.GetActor())
+    {
+        return;
+    }
+
+    AInteractable* Interactable = Cast<AInteractable>(Hit.GetActor());
+
+    if (!Interactable)
+    {
+        return;
+    }
+
+    CurrentInteractable = Interactable;
+    Interactable->Interact();
 }
 
 void AHonoratkaPlayerController::OnLeftMouseClickTriggered()
 {
-    // We look for the location in the world where the player has pressed the input.
-    FHitResult Hit;
-    bool bHitSuccessful = false;
-    bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
 }
 
 void AHonoratkaPlayerController::OnLeftMouseClickReleased()
 {
+    if (CurrentInteractable)
+    {
+        CurrentInteractable->Uninteract();
+    }
 }
