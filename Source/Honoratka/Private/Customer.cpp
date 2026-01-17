@@ -173,7 +173,15 @@ void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
 
     Super::NotifyActorOnClicked(ButtonPressed);
 
-    GameManager->OnCustomerClicked(this);
+    if (ButtonPressed == EKeys::LeftMouseButton)
+    {
+        GameManager->OnCustomerClicked(this);
+    }
+
+    if (ButtonPressed == EKeys::RightMouseButton)
+    {
+        ChangeHighlight();
+    }
 }
 
 void ACustomer::UpdateAngriness(float DeltaTime)
@@ -319,4 +327,19 @@ void ACustomer::HideBubble()
     Bubble->RemoveFromParent();
     Bubble = nullptr;
     TimerHandle.Invalidate();
+}
+
+void ACustomer::ChangeHighlight()
+{
+    uint8 HighlightInt = (uint8)Highlight;
+    HighlightInt++;
+
+    if (HighlightInt > 2)
+    {
+        HighlightInt = 0;
+    }
+
+    Highlight = (ECustomerHighlight)HighlightInt;
+
+    UE_LOG(LogTemp, Log, TEXT("Customer: My Highlight is: %d"), HighlightInt);
 }

@@ -19,6 +19,14 @@ enum class ECustomerState : uint8
     Leaving = 3
 };
 
+UENUM(BlueprintType)
+enum class ECustomerHighlight : uint8
+{
+    Noone = 0,
+    Known = 1,
+    Unknown = 2
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
 
 UCLASS()
@@ -68,14 +76,14 @@ public:
     void GiveDish(EFoodType FoodType);
 
     // Click handling
-    virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
+    virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 
     // Public delegate others can bind to
     UPROPERTY(BlueprintAssignable)
     FSpawnBubbleDelegate OnBubbleSpawned;
 
 public:
-	UPROPERTY()
+    UPROPERTY()
     TObjectPtr<AHonoratkaTable> Table = nullptr;
 
     UPROPERTY(EditAnywhere)
@@ -164,6 +172,8 @@ private:
 
     FTimerHandle TimerHandle;
 
+    ECustomerHighlight Highlight = ECustomerHighlight::Noone;
+
     void UpdateAngriness(float DeltaTime);
     void UpdatePresence(float DeltaTime);
     void UpdateMovement(float DeltaTime);
@@ -171,4 +181,5 @@ private:
     bool HasReachedTarget() const;
     void OnCustomerBubbleSpawned();
     void HideBubble();
+    void ChangeHighlight();
 };
