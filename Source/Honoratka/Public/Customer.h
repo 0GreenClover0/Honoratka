@@ -77,6 +77,12 @@ public:
 	UPROPERTY()
     TObjectPtr<AHonoratkaTable> Table = nullptr;
 
+    UPROPERTY(EditAnywhere)
+    UTexture2D* HappyTexture = nullptr;
+
+    UPROPERTY(EditAnywhere)
+    UTexture2D* MadTexture = nullptr;
+
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
     float WalkSpeed = 150.0f;
@@ -125,7 +131,7 @@ private:
     bool bHasShownBubble = false;
 
     UPROPERTY()
-    TObjectPtr<UCustomerBubbleWidget> Bubble;
+    TObjectPtr<UCustomerBubbleWidget> Bubble = nullptr;
 
     UPROPERTY()
     EFoodType DesiredFoodType;

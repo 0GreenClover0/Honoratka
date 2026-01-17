@@ -123,12 +123,12 @@ void ACustomer::GiveDish(EFoodType FoodType)
 {
     if (DesiredFoodType == FoodType)
     {
-        UE_LOG(LogTemp, Log, TEXT("SATISIEFD"));
-        // Satisfied!
+        ShowBubble(HappyTexture);
+
         return;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("NOT SATISIEFD"));
+    ShowBubble(MadTexture);
 }
 
 void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
@@ -212,13 +212,21 @@ void ACustomer::SelectDesiredFoodItem()
 
 void ACustomer::ShowBubble(UTexture2D* BubbleTexture)
 {
-    TimerHandle.Invalidate();
-
     FVector WorldLocation = GetActorLocation();
 
-    Bubble = CreateWidget<UCustomerBubbleWidget>(GetWorld(), BubbleWidget);
+    if (Bubble == nullptr)
+    {
+        Bubble = CreateWidget<UCustomerBubbleWidget>(GetWorld(), BubbleWidget);
+        Bubble->SetVisible(true, WorldLocation);
+    }
+    else
+    {
+        GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+    }
+
+    TimerHandle.Invalidate();
+
     Bubble->SetTexture(BubbleTexture);
-    Bubble->SetVisible(true, WorldLocation);
 
     float TimerToShow = 3.0f;
     GetWorld()->GetTimerManager().SetTimer
@@ -239,5 +247,6 @@ void ACustomer::OnCustomerBubbleSpawned()
 void ACustomer::HideBubble()
 {
     Bubble->RemoveFromParent();
+    Bubble = nullptr;
     TimerHandle.Invalidate();
 }
