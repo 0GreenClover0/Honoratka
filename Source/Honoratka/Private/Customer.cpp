@@ -3,6 +3,7 @@
 #include "CustomerBubbleWidget.h"
 #include "CustomerManager.h"
 #include "GameManager.h"
+#include "Honoratka.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -116,6 +117,18 @@ void ACustomer::SetLeaveTargetPosition(FVector const& Position)
 void ACustomer::SetCustomerManager(ACustomerManager* NewCustomerManager)
 {
     CustomerManager = NewCustomerManager;
+}
+
+void ACustomer::GiveDish(EFoodType FoodType)
+{
+    if (DesiredFoodType == FoodType)
+    {
+        UE_LOG(LogTemp, Log, TEXT("SATISIEFD"));
+        // Satisfied!
+        return;
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("NOT SATISIEFD"));
 }
 
 void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)

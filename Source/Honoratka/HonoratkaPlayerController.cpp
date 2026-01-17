@@ -76,4 +76,6 @@ void AHonoratkaPlayerController::OnLeftMouseClickReleased()
     {
         CurrentInteractable->Uninteract();
     }
+
+    CurrentInteractable = nullptr;
 }

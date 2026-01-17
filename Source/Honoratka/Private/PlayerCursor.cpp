@@ -1,11 +1,9 @@
 #include "PlayerCursor.h"
-
 #include "Components/Image.h"
 
 void UPlayerCursor::UpdateCursor(UTexture2D* CursorTexture)
 {
     ensure(CursorImage);
-
     CursorImage->SetBrushFromTexture(CursorTexture, true);
 }
 

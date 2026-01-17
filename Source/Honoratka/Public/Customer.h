@@ -63,6 +63,8 @@ public:
     void SetLeaveTargetPosition(FVector const& Position);
     void SetCustomerManager(ACustomerManager* NewCustomerManager);
 
+    void GiveDish(EFoodType FoodType);
+
     // Click handling
     virtual void NotifyActorOnClicked(FKey ButtonPressed = EKeys::LeftMouseButton) override;
 
