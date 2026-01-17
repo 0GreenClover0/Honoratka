@@ -148,12 +148,20 @@ private:
 
     bool bIsSatisfied = false;
 
+    // Timer which starts when customer gets seated down.
+    float PresenceTimer = 0.0f;
+
+    // Threshold which determines how much time (in seconds) the customer will spend in the cafe (unless he leaves from other reasons).
+    UPROPERTY()
+    float PresenceThreshold = 45.0f;
+
     UPROPERTY()
     FVector LeaveTargetPosition;
 
     FTimerHandle TimerHandle;
 
     void UpdateAngriness(float DeltaTime);
+    void UpdatePresence(float DeltaTime);
     void UpdateMovement(float DeltaTime);
     bool HasReachedTarget() const;
     void OnCustomerBubbleSpawned();

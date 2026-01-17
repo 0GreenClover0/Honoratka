@@ -38,6 +38,7 @@ void ACustomer::Tick(float DeltaTime)
     }
 
     UpdateAngriness(DeltaTime);
+    UpdatePresence(DeltaTime);
 }
 
 void ACustomer::SetQueuePosition(int32 Position)
@@ -166,6 +167,19 @@ void ACustomer::UpdateAngriness(float DeltaTime)
     }
 
     if (AngryCounter > AngryThreshold)
+    {
+	    LeaveRestaurant();
+    }
+}
+
+void ACustomer::UpdatePresence(float DeltaTime)
+{
+    if (CurrentState == ECustomerState::Seated)
+    {
+        PresenceTimer += DeltaTime;
+    }
+
+    if (PresenceTimer > PresenceThreshold)
     {
 	    LeaveRestaurant();
     }
