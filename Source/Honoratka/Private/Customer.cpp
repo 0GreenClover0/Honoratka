@@ -209,6 +209,11 @@ void ACustomer::UpdateAngriness(float DeltaTime)
 
 void ACustomer::UpdatePresence(float DeltaTime)
 {
+    if (CurrentState == ECustomerState::Leaving)
+    {
+        return;
+    }
+
     if (CurrentState == ECustomerState::Seated)
     {
         PresenceTimer += DeltaTime;
