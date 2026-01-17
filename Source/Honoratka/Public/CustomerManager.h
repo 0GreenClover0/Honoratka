@@ -32,6 +32,44 @@ struct FGreatCustomerWork
     FText Description;
 };
 
+UENUM(BlueprintType)
+enum class ECustomerType : uint8
+{
+    Actor = 0,
+    Director = 1,
+    Screenwriter = 2,
+};
+
+USTRUCT(BlueprintType)
+struct FCustomerType
+{
+    GENERATED_BODY()
+    
+    UPROPERTY(EditAnywhere)
+    ECustomerType CustomerType;
+
+    UPROPERTY(EditAnywhere)
+    bool bIsMale;
+
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UMaterial> BaseMaterial;
+
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UMaterial> SitMaterial;
+
+    UPROPERTY(EditAnywhere)
+    TArray<TObjectPtr<UMaterial>> Accessory1Materials;
+
+    UPROPERTY(EditAnywhere)
+    TArray<TObjectPtr<UMaterial>> Accessory2Materials;
+
+    UPROPERTY(EditAnywhere)
+    TArray<TObjectPtr<UMaterial>> Accessory3Materials;
+
+    UPROPERTY(EditAnywhere)
+    TArray<TObjectPtr<UMaterial>> Accessory2SitMaterials;
+};
+
 UCLASS()
 class HONORATKA_API ACustomerManager : public AActor
 {
@@ -68,6 +106,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Works")
     TArray<FGreatCustomerWork> GreatCustomerWorks = {};
 
+    UPROPERTY(EditAnywhere, Category = "Customer Types")
+    TArray<FCustomerType> CustomerTypes = {};
+
+    UPROPERTY(EditAnywhere, Category = "Customer Types")
+    TObjectPtr<UMaterial> TransparentMaterial = nullptr;
+
     // Configuration
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
     TSubclassOf<ACustomer> CustomerPrefab;
@@ -95,7 +139,7 @@ public:
     FVector QueueDirection = FVector(0, 1, 0);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Queue")
-    float PairSideOffset = 50.0f;
+    float PairSideOffset = 35.0f;
 
     // Spawn point
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")

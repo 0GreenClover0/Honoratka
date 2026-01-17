@@ -86,6 +86,54 @@ void ACustomerManager::SpawnCustomerGroup()
         }
 
         ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
+
+        ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
+        bool bIsMale = FMath::RandBool();
+
+        for (int32 k = 0; k < CustomerTypes.Num(); ++k)
+        {
+            if (CustomerTypes[k].CustomerType != RandomType || CustomerTypes[k].bIsMale != bIsMale)
+            {
+                continue;
+            }
+
+            UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("MainBody")));
+            MainBody->SetMaterial(0, CustomerTypes[k].BaseMaterial);
+
+            UStaticMeshComponent* Accessory1 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory1")));
+            if (CustomerTypes[k].Accessory1Materials.Num() > 0)
+            {
+                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Materials.Num() - 1);
+                Accessory1->SetMaterial(0, CustomerTypes[k].Accessory1Materials[RandAccessory]);
+            }
+            else
+            {
+                Accessory1->SetMaterial(0, TransparentMaterial);
+            }
+
+            UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory2")));
+            if (CustomerTypes[k].Accessory2Materials.Num() > 0)
+            {
+                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Materials.Num() - 1);
+                Accessory2->SetMaterial(0, CustomerTypes[k].Accessory2Materials[RandAccessory]);
+            }
+            else
+            {
+                Accessory2->SetMaterial(0, TransparentMaterial);
+            }
+
+            UStaticMeshComponent* Accessory3 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory3")));
+            if (CustomerTypes[k].Accessory3Materials.Num() > 0)
+            {
+                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Materials.Num() - 1);
+                Accessory3->SetMaterial(0, CustomerTypes[k].Accessory3Materials[RandAccessory]);
+            }
+            else
+            {
+                Accessory3->SetMaterial(0, TransparentMaterial);
+            }
+        }
+
         NewCustomer->SetLeaveTargetPosition(SpawnLocation);
         NewCustomer->SetCustomerManager(this);
         NewCustomer->SetPairOffset(PairSideOffset);
