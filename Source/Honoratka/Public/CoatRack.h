@@ -14,6 +14,7 @@ class HONORATKA_API ACoatRack : public AInteractable
     GENERATED_BODY()
 
 public:
+    ACoatRack();
 
     void Tick(float DeltaTime) override;
 
@@ -31,9 +32,17 @@ protected:
     TObjectPtr<USkeletalMeshComponent> RackModel;
     TObjectPtr<UBoxComponent> RackCollider;
 
+    UFUNCTION()
+    void OnHoverBegin(UPrimitiveComponent* TouchedComponent);
+
+    UFUNCTION()
+    void OnHoverEnd(UPrimitiveComponent* TouchedComponent);
+
+
 private:
     float TimeToFall = 0.0f;
     float FallRotation = 0.0f;
+    TObjectPtr<UMaterialInterface> OutlineMaterial;
 
     void ResetTimeToFall();
     void Shake(float DeltaTime);
