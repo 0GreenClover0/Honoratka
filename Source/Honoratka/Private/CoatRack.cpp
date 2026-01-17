@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "CoatRack.h"
+#include <CustomerManager.h>
+#include <Kismet/GameplayStatics.h>
 
 void ACoatRack::BeginPlay()
 {
@@ -42,7 +44,19 @@ void ACoatRack::Shake(float DeltaTime)
 
 void ACoatRack::Fall()
 {
-    FallRotation = FMath::Lerp(FallRotation, 90.0f, 0.01f);
+    if (FallRotation < 89.0f)
+    {
+        FallRotation = FMath::Lerp(FallRotation, 90.0f, 0.05f);
+    }
+    else
+    {
+        if (FallRotation != 90.0f)
+        {
+            FallRotation = 90.0f;
+            ACustomerManager* CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfCustomersInside);
+        }
+    }
 
     RackModel->SetRelativeRotation(FRotator(FallRotation, 0.0f, 0.0f));
 }
