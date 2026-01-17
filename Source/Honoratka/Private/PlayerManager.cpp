@@ -15,9 +15,6 @@ void APlayerManager::BeginPlay()
 
     PlayerCursor = CreateWidget<UPlayerCursor>(GetWorld(), PlayerCursorWidgetClass);
     PlayerCursor->AddToViewport(1);
-
-    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    PlayerController->SetShowMouseCursor(false);
 }
 
 void APlayerManager::Tick(float DeltaTime)
@@ -33,7 +30,7 @@ void APlayerManager::SelectObject(TObjectPtr<AInteractable> Object, TObjectPtr<U
     };
 
     PlayerCursor->UpdateCursor(GrabCursorTexture);
-    
+
     PlayerCursor->UpdateHeldObjectIcon(Icon);
 }
 
