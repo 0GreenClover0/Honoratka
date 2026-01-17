@@ -133,6 +133,8 @@ void ACustomer::GiveDish(EFoodType FoodType)
 
         AngryCounter = -999.0f;
 
+        CustomerManager->ModifyHappiness(1.0f);
+
         return;
     }
 
@@ -153,6 +155,11 @@ void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
 
 void ACustomer::UpdateAngriness(float DeltaTime)
 {
+    if (CurrentState == ECustomerState::Leaving)
+    {
+        return;
+    }
+
     if (CurrentState == ECustomerState::WaitingInQueue)
     {
         // NOTE: Only the first customer (and their pair) in the queue are getting angry.
@@ -166,8 +173,17 @@ void ACustomer::UpdateAngriness(float DeltaTime)
         }
     }
 
+    if (CurrentState == ECustomerState::Seated)
+    {
+        AngryCounter += DeltaTime;
+    }
+
     if (AngryCounter > AngryThreshold)
     {
+        CustomerManager->ModifyHappiness(-1.0f);
+
+        UE_LOG(LogTemp, Log, TEXT("Decrease happiness"));
+
 	    LeaveRestaurant();
     }
 }

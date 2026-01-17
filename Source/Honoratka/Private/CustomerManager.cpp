@@ -166,6 +166,11 @@ ACustomer* ACustomerManager::GetFirstCustomerInQueue() const
     return nullptr;
 }
 
+void ACustomerManager::ModifyHappiness(float Amount)
+{
+    Happiness += Amount;
+}
+
 void ACustomerManager::RemoveCustomerFromQueue(ACustomer* Customer)
 {
     if (!Customer)

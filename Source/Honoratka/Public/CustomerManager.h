@@ -43,6 +43,28 @@ public:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
 
+    // Queue management
+    void MoveQueueForward();
+    void RemoveCustomerFromQueue(ACustomer* Customer);
+    int32 GetQueueLength() const { return CustomerQueue.Num(); }
+    ACustomer* GetFirstCustomerInQueue() const;
+
+    void ModifyHappiness(float Amount);
+
+protected:
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+    void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
+    void SpawnCustomerGroup();
+    void UpdateQueuePositions();
+    FVector GetQueuePositionForIndex(int32 Index) const;
+
+#if WITH_EDITOR
+    void DebugDrawQueue() const;
+#endif
+
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Works")
     TArray<FGreatCustomerWork> GreatCustomerWorks = {};
 
@@ -83,18 +105,9 @@ public:
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Spawning")
     TObjectPtr<USceneComponent> CustomerQueueFrontPoint;
 
-    // Queue management
-    void MoveQueueForward();
-    void RemoveCustomerFromQueue(ACustomer* Customer);
-    int32 GetQueueLength() const { return CustomerQueue.Num(); }
-    ACustomer* GetFirstCustomerInQueue() const;
-
     // Debugging
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
     bool bDebugDrawQueue = false;
-
-protected:
-    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
     UPROPERTY()
@@ -103,12 +116,5 @@ private:
     float TimeSinceLastSpawn;
     float NextSpawnTime;
 
-    void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
-    void SpawnCustomerGroup();
-    void UpdateQueuePositions();
-    FVector GetQueuePositionForIndex(int32 Index) const;
-
-#if WITH_EDITOR
-    void DebugDrawQueue() const;
-#endif
+    float Happiness = 0.0f;
 };
