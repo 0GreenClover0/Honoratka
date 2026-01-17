@@ -31,6 +31,7 @@ public:
 
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     // Queue management
     void SetQueuePosition(int32 Position);
@@ -82,6 +83,9 @@ public:
 
     UPROPERTY(EditAnywhere)
     UTexture2D* MadTexture = nullptr;
+
+    UPROPERTY(EditAnywhere)
+    UTexture2D* AngryTexture = nullptr;
 
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
@@ -163,6 +167,7 @@ private:
     void UpdateAngriness(float DeltaTime);
     void UpdatePresence(float DeltaTime);
     void UpdateMovement(float DeltaTime);
+    void UpdateBubblePosition();
     bool HasReachedTarget() const;
     void OnCustomerBubbleSpawned();
     void HideBubble();

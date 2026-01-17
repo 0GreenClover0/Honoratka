@@ -39,6 +39,21 @@ void ACustomer::Tick(float DeltaTime)
 
     UpdateAngriness(DeltaTime);
     UpdatePresence(DeltaTime);
+
+    if (Bubble)
+    {
+        UpdateBubblePosition();
+    }
+}
+
+void ACustomer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
+    if (Bubble)
+    {
+        HideBubble();
+    }
 }
 
 void ACustomer::SetQueuePosition(int32 Position)
@@ -135,6 +150,8 @@ void ACustomer::GiveDish(EFoodType FoodType)
 
         CustomerManager->ModifyHappiness(1.0f);
 
+        UE_LOG(LogTemp, Log, TEXT("Increase happiness by 1"));
+
         return;
     }
 
@@ -182,7 +199,9 @@ void ACustomer::UpdateAngriness(float DeltaTime)
     {
         CustomerManager->ModifyHappiness(-1.0f);
 
-        UE_LOG(LogTemp, Log, TEXT("Decrease happiness"));
+        UE_LOG(LogTemp, Log, TEXT("Decrease happiness by 1"));
+
+        ShowBubble(AngryTexture);
 
 	    LeaveRestaurant();
     }
@@ -214,6 +233,11 @@ void ACustomer::UpdateMovement(float DeltaTime)
     FVector Direction = (TargetPosition - GetActorLocation()).GetSafeNormal();
     Velocity = Direction * WalkSpeed;
     AddActorWorldOffset(Velocity * DeltaTime);
+}
+
+void ACustomer::UpdateBubblePosition()
+{
+    Bubble->SetPosition(GetActorLocation());
 }
 
 bool ACustomer::HasReachedTarget() const
