@@ -29,7 +29,7 @@ void ACustomer::Tick(float DeltaTime)
 
     if (CurrentState == ECustomerState::Leaving && HasReachedTarget())
     {
-	    Destroy();
+        Destroy();
     }
 
     if (bMovingToTarget)
@@ -63,10 +63,15 @@ void ACustomer::SetQueuePosition(int32 Position)
 
 void ACustomer::LeaveRestaurant()
 {
-	if (CurrentState == ECustomerState::WaitingInQueue)
-	{
-		CustomerManager->RemoveCustomerFromQueue(this);
-	}
+    if (CurrentState == ECustomerState::WaitingInQueue)
+    {
+        CustomerManager->RemoveCustomerFromQueue(this);
+        CustomerManager->NumberOfCustomersInQueue--;
+    }
+    else
+    {
+        CustomerManager->NumberOfCustomersInside--;
+    }
 
     SetCustomerState(ECustomerState::Leaving);
     SetTargetPosition(LeaveTargetPosition);
@@ -75,11 +80,14 @@ void ACustomer::LeaveRestaurant()
 void ACustomer::SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Position)
 {
     // If we've just been seated for the first time, reset angriness counter and select desired food item.
-    if (CurrentState != ECustomerState::Seated)
+    if (CurrentState == ECustomerState::WaitingInQueue)
     {
         AngryCounter = 0.0f;
 
         SelectDesiredFoodItem();
+
+        CustomerManager->NumberOfCustomersInQueue--;
+        CustomerManager->NumberOfCustomersInside++;
     }
 
     SetCustomerState(ECustomerState::Seated);
@@ -186,7 +194,7 @@ void ACustomer::UpdateAngriness(float DeltaTime)
 
         if (IsFirstCustomer || IsPairOfFirst)
         {
-			AngryCounter += DeltaTime;
+            AngryCounter += DeltaTime;
         }
     }
 
@@ -203,7 +211,7 @@ void ACustomer::UpdateAngriness(float DeltaTime)
 
         ShowBubble(AngryTexture);
 
-	    LeaveRestaurant();
+        LeaveRestaurant();
     }
 }
 
@@ -221,7 +229,7 @@ void ACustomer::UpdatePresence(float DeltaTime)
 
     if (PresenceTimer > PresenceThreshold)
     {
-	    LeaveRestaurant();
+        LeaveRestaurant();
     }
 }
 

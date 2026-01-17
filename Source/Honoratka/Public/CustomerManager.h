@@ -23,7 +23,7 @@ struct FCustomerSlot
 USTRUCT(BlueprintType)
 struct FGreatCustomerWork
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
     UPROPERTY(EditAnywhere)
     TObjectPtr<UTexture2D> PosterTexture;
@@ -108,6 +108,10 @@ public:
     // Debugging
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Debug")
     bool bDebugDrawQueue = false;
+
+    // Number of customers
+    int NumberOfCustomersInQueue = 0;
+    int NumberOfCustomersInside = 0;
 
 private:
     UPROPERTY()

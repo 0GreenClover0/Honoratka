@@ -96,6 +96,8 @@ void ACustomerManager::SpawnCustomerGroup()
         {
             SpawnedCustomers.Add(NewCustomer);
             NewCustomer->SetCustomerState(ECustomerState::WaitingInQueue);
+
+            NumberOfCustomersInQueue++;
         }
     }
 
