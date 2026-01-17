@@ -170,6 +170,15 @@ ACustomer* ACustomerManager::GetFirstCustomerInQueue() const
 
 void ACustomerManager::ModifyHappiness(float Amount)
 {
+    if (Amount > 0)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Increase happiness by %f"), Amount);
+    }
+    else if (Amount < 0)
+    {
+        UE_LOG(LogTemp, Log, TEXT("Decrease happiness by %f"), Amount);
+    }
+
     Happiness += Amount;
 }
 

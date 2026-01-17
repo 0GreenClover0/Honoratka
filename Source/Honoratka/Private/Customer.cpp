@@ -158,8 +158,6 @@ void ACustomer::GiveDish(EFoodType FoodType)
 
         CustomerManager->ModifyHappiness(1.0f);
 
-        UE_LOG(LogTemp, Log, TEXT("Increase happiness by 1"));
-
         return;
     }
 
@@ -206,8 +204,6 @@ void ACustomer::UpdateAngriness(float DeltaTime)
     if (AngryCounter > AngryThreshold)
     {
         CustomerManager->ModifyHappiness(-1.0f);
-
-        UE_LOG(LogTemp, Log, TEXT("Decrease happiness by 1"));
 
         ShowBubble(AngryTexture);
 
