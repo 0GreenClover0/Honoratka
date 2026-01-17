@@ -41,6 +41,7 @@ public:
     void SetWidgetClass(const TSubclassOf<UCustomerBubbleWidget>& WidgetClass);
     void SetShowingBubble();
     void SelectDesiredFoodItem();
+    void ShowBubble(UTexture2D* BubbleTexture);
 
     // State management
     void SetCustomerState(ECustomerState NewState);

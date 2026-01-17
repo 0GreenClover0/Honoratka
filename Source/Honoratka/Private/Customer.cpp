@@ -210,14 +210,14 @@ void ACustomer::SelectDesiredFoodItem()
     SetShowingBubble();
 }
 
-void ACustomer::OnCustomerBubbleSpawned()
+void ACustomer::ShowBubble(UTexture2D* BubbleTexture)
 {
     TimerHandle.Invalidate();
 
     FVector WorldLocation = GetActorLocation();
 
     Bubble = CreateWidget<UCustomerBubbleWidget>(GetWorld(), BubbleWidget);
-    Bubble->SetTexture(DesiredFoodTexture);
+    Bubble->SetTexture(BubbleTexture);
     Bubble->SetVisible(true, WorldLocation);
 
     float TimerToShow = 3.0f;
@@ -229,6 +229,11 @@ void ACustomer::OnCustomerBubbleSpawned()
         TimerToShow,                // float delay until elapsed
         false                        // looping?
     );
+}
+
+void ACustomer::OnCustomerBubbleSpawned()
+{
+    ShowBubble(DesiredFoodTexture);
 }
 
 void ACustomer::HideBubble()
