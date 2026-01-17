@@ -121,9 +121,16 @@ void ACustomer::SetCustomerManager(ACustomerManager* NewCustomerManager)
 
 void ACustomer::GiveDish(EFoodType FoodType)
 {
+    if (bIsSatisfied)
+    {
+        return;
+    }
+
     if (DesiredFoodType == FoodType)
     {
         ShowBubble(HappyTexture);
+
+        AngryCounter = -999.0f;
 
         return;
     }

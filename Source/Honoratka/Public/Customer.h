@@ -146,6 +146,8 @@ private:
     UPROPERTY()
     float AngryThreshold = 30.0f;
 
+    bool bIsSatisfied = false;
+
     UPROPERTY()
     FVector LeaveTargetPosition;
 
