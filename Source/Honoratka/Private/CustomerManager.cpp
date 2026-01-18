@@ -68,7 +68,7 @@ void ACustomerManager::SpawnCustomerGroup()
 
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
-    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
     FVector SpawnLocation = CustomerSpawnPoint->GetComponentLocation();
 
