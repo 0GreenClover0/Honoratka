@@ -116,7 +116,7 @@ void ACustomer::SetCustomerState(ECustomerState NewState)
 
 void ACustomer::SetTargetPosition(const FVector& Target)
 {
-    CustomerManager->ChangeCustomerTexture(this, false);
+    CustomerManager->ChangeCustomerTexture(this, false, false);
     TargetPosition = Target;
     bMovingToTarget = true;
 }
@@ -260,7 +260,26 @@ void ACustomer::UpdateMovement(float DeltaTime)
     {
         if (CurrentState == ECustomerState::Seated)
         {
-            CustomerManager->ChangeCustomerTexture(this, true);
+            FTableSeat Seat = Table->GetCustomerSeat(this);
+
+            // Randomize sprite mirroring for top seat.
+            bool bRandomLeft = false;
+            if (Seat.SeatType == ESeatType::Top)
+            {
+                if (FMath::RandBool())
+                {
+                    bRandomLeft = true;
+                }
+            }
+
+            if (Seat.SeatType == ESeatType::Left || bRandomLeft)
+            {
+                CustomerManager->ChangeCustomerTexture(this, true, false);
+            }
+            else
+            {
+                CustomerManager->ChangeCustomerTexture(this, true, true);
+            }
         }
 
         bMovingToTarget = false;

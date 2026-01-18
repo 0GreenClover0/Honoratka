@@ -1,6 +1,7 @@
 #include "CustomerManager.h"
 
 #include "CustomerWork.h"
+#include "Components/CapsuleComponent.h"
 
 ACustomerManager::ACustomerManager()
 {
@@ -255,11 +256,20 @@ void ACustomerManager::ModifyHappiness(float Amount)
     Happiness += Amount;
 }
 
-void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting)
+void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting, bool bMirror)
 {
+    if (bMirror)
+    {
+        Cast<UCapsuleComponent>(Customer->GetDefaultSubobjectByName(TEXT("CollisionCylinder")))->SetRelativeScale3D(FVector(-1.0f, 1.0f, 1.0f));
+    }
+    else
+    {
+        Cast<UCapsuleComponent>(Customer->GetDefaultSubobjectByName(TEXT("CollisionCylinder")))->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+    }
+
     UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("MainBody")));
     UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("Accessory2")));
-    FCustomerTypeInstance CustomerTypeInstance = Customer->GetCustomerTypeInstance();\
+    FCustomerTypeInstance CustomerTypeInstance = Customer->GetCustomerTypeInstance();
     int32 CustomerTypeIndex = GetCustomerTypeIndex(CustomerTypeInstance);
 
     if (bIsSitting)

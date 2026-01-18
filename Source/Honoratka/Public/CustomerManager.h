@@ -89,7 +89,7 @@ public:
 
     void ModifyHappiness(float Amount);
 
-    void ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting);
+    void ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting, bool bMirror);
 
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

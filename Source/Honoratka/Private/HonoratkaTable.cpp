@@ -1,11 +1,23 @@
 #include "HonoratkaTable.h"
 #include "Customer.h"
+#include "DrawDebugHelpers.h"
 #include "GameManager.h"
 #include "Kismet/GameplayStatics.h"
 
 AHonoratkaTable::AHonoratkaTable()
 {
     PrimaryActorTick.bCanEverTick = true;
+
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+
+    SeatComponents.Reserve(MaxSeats);
+    for (int32 i = 0; i < MaxSeats; ++i)
+    {
+        FString Name = FString::Printf(TEXT("Seat%d"), i);
+        USceneComponent* SeatComponent = CreateDefaultSubobject<USceneComponent>(FName(Name));
+        SeatComponent->SetupAttachment(RootComponent);
+        SeatComponents.Add(SeatComponent);
+    }
 }
 
 void AHonoratkaTable::BeginPlay()
@@ -28,24 +40,10 @@ void AHonoratkaTable::InitializeSeats()
     for (int32 i = 0; i < MaxSeats; ++i)
     {
         FTableSeat Seat;
-        Seat.SeatPosition = CalculateSeatPosition(i);
+        Seat.SeatPosition = SeatComponents[i]->GetComponentLocation();
+        Seat.SeatType = static_cast<ESeatType>(i);
         Seats.Add(Seat);
     }
-}
-
-FVector AHonoratkaTable::CalculateSeatPosition(int32 SeatIndex) const
-{
-    float AngleStep = 360.0f / MaxSeats;
-    float Angle = AngleStep * SeatIndex;
-    float Radians = FMath::DegreesToRadians(Angle);
-
-    FVector Offset(
-        FMath::Cos(Radians) * SeatRadius,
-        FMath::Sin(Radians) * SeatRadius,
-        0.0f
-    );
-
-    return GetActorLocation() + Offset;
 }
 
 bool AHonoratkaTable::CanSeatCustomers(int32 Count) const
@@ -146,6 +144,20 @@ bool AHonoratkaTable::HasCustomer(ACustomer* Customer) const
     }
 
     return false;
+}
+
+FTableSeat AHonoratkaTable::GetCustomerSeat(ACustomer* Customer) const
+{
+    for (const FTableSeat& Seat : Seats)
+    {
+        if (Seat.Customer == Customer)
+        {
+            return Seat;
+        }
+    }
+
+    ensure(false);
+    return {};
 }
 
 void AHonoratkaTable::NotifyActorOnClicked(FKey ButtonPressed)
