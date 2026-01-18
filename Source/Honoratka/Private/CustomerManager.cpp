@@ -17,6 +17,16 @@ void ACustomerManager::BeginPlay()
         UE_LOG(LogTemp, Warning, TEXT("CustomerManager: CustomerPrefab not assigned!"));
     }
 
+    // Get album and initialize with random familiar customers
+    if (CustomerAlbumReference)
+    {
+        for (int32 i = 0; i < CustomerAlbumReference->FamiliarCustomersNum; ++i)
+        {
+            const FCustomerTypeInstance CustomerTypeInstance = GenerateRandomCustomerInstance();
+            CustomerAlbumReference->AddFamiliarCustomer(CustomerTypeInstance);
+        }
+    }
+
     TimeSinceLastSpawn = 0.0f;
     NextSpawnTime = FMath::FRandRange(MinSpawnInterval, MaxSpawnInterval);
 }
@@ -86,71 +96,9 @@ void ACustomerManager::SpawnCustomerGroup()
             OffsetSpawnLocation = SpawnLocation + FVector(0, -PairSideOffset, 0);
         }
 
-        ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
+        const bool bFamiliar = FMath::RandBool();
 
-        FCustomerTypeInstance CustomerTypeInstance = {};
-
-        ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
-        bool bIsMale = FMath::RandBool();
-
-        CustomerTypeInstance.IsMale = bIsMale;
-        CustomerTypeInstance.Type = static_cast<int32>(RandomType);
-
-        for (int32 k = 0; k < CustomerTypes.Num(); ++k)
-        {
-            if (CustomerTypes[k].CustomerType != RandomType || CustomerTypes[k].bIsMale != bIsMale)
-            {
-                continue;
-            }
-
-            UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("MainBody")));
-            MainBody->SetMaterial(0, CustomerTypes[k].BaseMaterial);
-
-            UStaticMeshComponent* Accessory1 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory1")));
-            if (CustomerTypes[k].Accessory1Materials.Num() > 0)
-            {
-                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Materials.Num() - 1);
-                CustomerTypeInstance.Accessory1 = RandAccessory;
-                Accessory1->SetMaterial(0, CustomerTypes[k].Accessory1Materials[RandAccessory]);
-            }
-            else
-            {
-                Accessory1->SetMaterial(0, TransparentMaterial);
-            }
-
-            UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory2")));
-            if (CustomerTypes[k].Accessory2Materials.Num() > 0)
-            {
-                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Materials.Num() - 1);
-                CustomerTypeInstance.Accessory2 = RandAccessory;
-                Accessory2->SetMaterial(0, CustomerTypes[k].Accessory2Materials[RandAccessory]);
-            }
-            else
-            {
-                Accessory2->SetMaterial(0, TransparentMaterial);
-            }
-
-            UStaticMeshComponent* Accessory3 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory3")));
-            if (CustomerTypes[k].Accessory3Materials.Num() > 0)
-            {
-                int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Materials.Num() - 1);
-                CustomerTypeInstance.Accessory3 = RandAccessory;
-                Accessory3->SetMaterial(0, CustomerTypes[k].Accessory3Materials[RandAccessory]);
-            }
-            else
-            {
-                Accessory3->SetMaterial(0, TransparentMaterial);
-            }
-        }
-
-        NewCustomer->SetCustomerTypeInstance(CustomerTypeInstance);
-        NewCustomer->SetLeaveTargetPosition(SpawnLocation);
-        NewCustomer->SetCustomerManager(this);
-        NewCustomer->SetPairOffset(PairSideOffset);
-        NewCustomer->SetWidgetClass(BubbleWidget);
-        NewCustomer->GetComponentByClass<UCustomerWork>()->GreatWork = GreatCustomerWorks[FMath::RandRange(0, GreatCustomerWorks.Num() - 1)];
-
-        if (NewCustomer)
+        if (ACustomer* NewCustomer = SpawnSingleCustomer(OffsetSpawnLocation, SpawnLocation, SpawnParams, bFamiliar))
         {
             SpawnedCustomers.Add(NewCustomer);
             NewCustomer->SetCustomerState(ECustomerState::WaitingInQueue);
@@ -179,6 +127,139 @@ void ACustomerManager::SpawnCustomerGroup()
 
         UE_LOG(LogTemp, Log, TEXT("Spawned %d customer(s). Queue length: %d"), SpawnedCustomers.Num(), CustomerQueue.Num());
     }
+}
+
+TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& OffsetSpawnLocation, const FVector& LeaveTargetLocation, const FActorSpawnParameters& SpawnParams, bool bFamiliar)
+{
+    ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
+
+    check(CustomerAlbumReference);
+
+    // Generate CustomerTypeInstance
+    FCustomerTypeInstance CustomerTypeInstance = {};
+    if (bFamiliar)
+    {
+        TArray<FCustomerTypeInstance> FamilarCustomers = CustomerAlbumReference->GetAllFamiliarCustomers();
+        const int32 Index = FMath::RandRange(0, FamilarCustomers.Num() - 1);
+
+        check(!FamilarCustomers.IsEmpty());
+
+        CustomerTypeInstance = FamilarCustomers[Index];
+    }
+    else
+    {
+        // Likely unfamiliar but there IS a very tiny chance for a familiar guy, leaving it like that
+        CustomerTypeInstance = GenerateRandomCustomerInstance();
+    }
+
+    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
+    bool bIsMale = FMath::RandBool();
+
+    CustomerTypeInstance.IsMale = bIsMale;
+    CustomerTypeInstance.Type = static_cast<int32>(RandomType);
+
+    for (int32 k = 0; k < CustomerTypes.Num(); ++k)
+    {
+        if (CustomerTypes[k].CustomerType != RandomType || CustomerTypes[k].bIsMale != bIsMale)
+        {
+            continue;
+        }
+
+        UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("MainBody")));
+        MainBody->SetMaterial(0, CustomerTypes[k].BaseMaterial);
+
+        UStaticMeshComponent* Accessory1 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory1")));
+        if (CustomerTypes[k].Accessory1Materials.Num() > 0 && CustomerTypeInstance.Accessory1 >= 0)
+        {
+            const int32 AccessoryId = CustomerTypeInstance.Accessory1;
+            Accessory1->SetMaterial(0, CustomerTypes[k].Accessory1Materials[AccessoryId]);
+        }
+        else
+        {
+            Accessory1->SetMaterial(0, TransparentMaterial);
+        }
+
+        UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory2")));
+        if (CustomerTypes[k].Accessory2Materials.Num() > 0 && CustomerTypeInstance.Accessory2 >= 0)
+        {
+            const int32 AccessoryId = CustomerTypeInstance.Accessory2;
+            Accessory2->SetMaterial(0, CustomerTypes[k].Accessory2Materials[AccessoryId]);
+        }
+        else
+        {
+            Accessory2->SetMaterial(0, TransparentMaterial);
+        }
+
+        UStaticMeshComponent* Accessory3 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory3")));
+        if (CustomerTypes[k].Accessory3Materials.Num() > 0 && CustomerTypeInstance.Accessory3 >= 0)
+        {
+            const int32 AccessoryId = CustomerTypeInstance.Accessory3;
+            Accessory3->SetMaterial(0, CustomerTypes[k].Accessory3Materials[AccessoryId]);
+        }
+        else
+        {
+            Accessory3->SetMaterial(0, TransparentMaterial);
+        }
+    }
+
+    NewCustomer->SetCustomerTypeInstance(CustomerTypeInstance);
+    NewCustomer->SetLeaveTargetPosition(LeaveTargetLocation);
+    NewCustomer->SetCustomerManager(this);
+    NewCustomer->SetPairOffset(PairSideOffset);
+    NewCustomer->SetWidgetClass(BubbleWidget);
+    NewCustomer->GetComponentByClass<UCustomerWork>()->GreatWork = GreatCustomerWorks[FMath::RandRange(0, GreatCustomerWorks.Num() - 1)];
+    return NewCustomer;
+}
+
+FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
+{
+    FCustomerTypeInstance CustomerTypeInstance = {};
+
+    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
+    bool bIsMale = FMath::RandBool();
+
+    CustomerTypeInstance.IsMale = bIsMale;
+    CustomerTypeInstance.Type = static_cast<int32>(RandomType);
+
+    for (int32 k = 0; k < CustomerTypes.Num(); ++k)
+    {
+        if (CustomerTypes[k].CustomerType != RandomType || CustomerTypes[k].bIsMale != bIsMale)
+        {
+            continue;
+        }
+
+        if (CustomerTypes[k].Accessory1Materials.Num() > 0)
+        {
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Materials.Num() - 1);
+            CustomerTypeInstance.Accessory1 = RandAccessory;
+        }
+        else
+        {
+            CustomerTypeInstance.Accessory1 = INDEX_NONE;
+        }
+
+        if (CustomerTypes[k].Accessory2Materials.Num() > 0)
+        {
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Materials.Num() - 1);
+            CustomerTypeInstance.Accessory2 = RandAccessory;
+        }
+        else
+        {
+            CustomerTypeInstance.Accessory2 = INDEX_NONE;
+        }
+
+        if (CustomerTypes[k].Accessory3Materials.Num() > 0)
+        {
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Materials.Num() - 1);
+            CustomerTypeInstance.Accessory3 = RandAccessory;
+        }
+        else
+        {
+            CustomerTypeInstance.Accessory3 = INDEX_NONE;
+        }
+    }
+
+    return CustomerTypeInstance;
 }
 
 void ACustomerManager::UpdateQueuePositions()

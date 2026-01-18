@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Customer.h"
+#include "CustomerAlbum.h"
 #include "CustomerManager.generated.h"
 
 class UCustomerBubbleWidget;
@@ -44,7 +45,7 @@ USTRUCT(BlueprintType)
 struct FCustomerType
 {
     GENERATED_BODY()
-    
+
     UPROPERTY(EditAnywhere)
     ECustomerType CustomerType;
 
@@ -97,6 +98,8 @@ protected:
 private:
     void SetCustomerGroupPosition(ACustomer* customer, const FVector& Position) const;
     void SpawnCustomerGroup();
+    TObjectPtr<ACustomer> SpawnSingleCustomer(const FVector& OffsetSpawnLocation, const FVector& LeaveTargetLocation, const FActorSpawnParameters& SpawnParams, bool bFamiliar);
+    FCustomerTypeInstance GenerateRandomCustomerInstance() const;
     void UpdateQueuePositions();
     FVector GetQueuePositionForIndex(int32 Index) const;
     int32 GetCustomerTypeIndex(const FCustomerTypeInstance& CustomerTypeInstance);
@@ -118,6 +121,9 @@ public:
     // Configuration
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
     TSubclassOf<ACustomer> CustomerPrefab;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
+    TObjectPtr<ACustomerAlbum> CustomerAlbumReference;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
     float MinSpawnInterval = 3.0f;
