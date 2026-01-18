@@ -31,6 +31,7 @@ void AGameManager::DeselectCustomers()
 {
     HighlightCustomers(false);
     SelectedCustomers.Empty();
+    PreviousTable = nullptr;
 }
 
 void AGameManager::OnTableClicked(AHonoratkaTable* Table)
@@ -48,6 +49,9 @@ void AGameManager::OnTableClicked(AHonoratkaTable* Table)
 
 void AGameManager::OnCustomerClicked(ACustomer* Customer)
 {
+    // Deselect previous selection.
+    DeselectCustomers();
+
     if (!Customer)
     {
         return;
@@ -55,19 +59,19 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
 
     ECustomerState State = Customer->GetCustomerState();
 
-    // If customer is in queue, only allow selecting if they're at the front
+    // If customer is in queue, only allow selecting if they're at the front.
     if (State == ECustomerState::WaitingInQueue)
     {
         ensure(CustomerManager);
 
-        // Check if this customer is the first in queue or paired with the first
+        // Check if this customer is the first in queue or paired with the first.
         ACustomer* FirstCustomer = CustomerManager->GetFirstCustomerInQueue();
         if (!FirstCustomer)
         {
             return;
         }
 
-        // Allow selection only if this is the first customer OR their pair
+        // Allow selection only if this is the first customer OR their pair.
         bool IsFirstCustomer = (Customer == FirstCustomer);
         bool IsPairOfFirst = (FirstCustomer->GetPairedCustomer() == Customer);
 
@@ -78,13 +82,10 @@ void AGameManager::OnCustomerClicked(ACustomer* Customer)
         }
     }
 
-    // Deselect previous selection
-    DeselectCustomers();
-
-    // Select this customer
+    // Select this customer.
     SelectedCustomers.Add(Customer);
 
-    // Store their current table if they're seated
+    // Store their current table if they're seated.
     if (Customer->GetCustomerState() == ECustomerState::Seated)
     {
         PreviousTable = FindCustomerTable(Customer);
@@ -124,7 +125,7 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
     ensure(Table);
     ensure(CustomerManager);
 
-    // Check if table has enough space
+    // Check if table has enough space.
     if (!Table->CanSeatCustomers(SelectedCustomers.Num()))
     {
         UE_LOG(LogTemp, Warning, TEXT("Table doesn't have enough seats!"));
@@ -132,7 +133,7 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
         return;
     }
 
-    // If reseating from another table, remove them first
+    // If reseating from another table, remove them first.
     if (PreviousTable)
     {
         for (ACustomer* Customer : SelectedCustomers)
@@ -144,7 +145,7 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
     }
     else
     {
-        // Coming from queue - remove only the selected customer from queue
+        // Coming from queue - remove only the selected customer from queue.
         if (SelectedCustomers.Num() > 0 && SelectedCustomers[0])
         {
             ECustomerState State = SelectedCustomers[0]->GetCustomerState();
@@ -155,7 +156,7 @@ void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)
         }
     }
 
-    // Seat customers at table
+    // Seat customers at table.
     if (Table->SeatCustomers(SelectedCustomers))
     {
         UE_LOG(LogTemp, Log, TEXT("Seated %d customer(s) at table"), SelectedCustomers.Num());

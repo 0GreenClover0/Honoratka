@@ -4,6 +4,7 @@
 #include "CustomerManager.h"
 #include "GameManager.h"
 #include "Honoratka.h"
+#include "HonoratkaTable.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -71,6 +72,11 @@ void ACustomer::LeaveRestaurant()
     else
     {
         CustomerManager->NumberOfCustomersInside--;
+    }
+
+    if (Table)
+    {
+        Table->RemoveCustomer(this);
     }
 
     SetCustomerState(ECustomerState::Leaving);
