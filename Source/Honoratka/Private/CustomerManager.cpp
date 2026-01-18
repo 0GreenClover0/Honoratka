@@ -152,15 +152,9 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
         CustomerTypeInstance = GenerateRandomCustomerInstance();
     }
 
-    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
-    bool bIsMale = FMath::RandBool();
-
-    CustomerTypeInstance.IsMale = bIsMale;
-    CustomerTypeInstance.Type = static_cast<int32>(RandomType);
-
     for (int32 k = 0; k < CustomerTypes.Num(); ++k)
     {
-        if (CustomerTypes[k].CustomerType != RandomType || CustomerTypes[k].bIsMale != bIsMale)
+        if (CustomerTypes[k].CustomerType != static_cast<ECustomerType>(CustomerTypeInstance.Type) || CustomerTypes[k].bIsMale != static_cast<bool>(CustomerTypeInstance.IsMale))
         {
             continue;
         }
