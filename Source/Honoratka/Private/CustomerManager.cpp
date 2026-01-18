@@ -87,8 +87,13 @@ void ACustomerManager::SpawnCustomerGroup()
 
         ACustomer* NewCustomer = GetWorld()->SpawnActor<ACustomer>(CustomerPrefab, OffsetSpawnLocation, FRotator::ZeroRotator, SpawnParams);
 
+        FCustomerTypeInstance CustomerTypeInstance = {};
+
         ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
         bool bIsMale = FMath::RandBool();
+
+        CustomerTypeInstance.IsMale = bIsMale;
+        CustomerTypeInstance.Type = static_cast<int32>(RandomType);
 
         for (int32 k = 0; k < CustomerTypes.Num(); ++k)
         {
@@ -104,6 +109,7 @@ void ACustomerManager::SpawnCustomerGroup()
             if (CustomerTypes[k].Accessory1Materials.Num() > 0)
             {
                 int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Materials.Num() - 1);
+                CustomerTypeInstance.Accessory1 = RandAccessory;
                 Accessory1->SetMaterial(0, CustomerTypes[k].Accessory1Materials[RandAccessory]);
             }
             else
@@ -115,6 +121,7 @@ void ACustomerManager::SpawnCustomerGroup()
             if (CustomerTypes[k].Accessory2Materials.Num() > 0)
             {
                 int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Materials.Num() - 1);
+                CustomerTypeInstance.Accessory2 = RandAccessory;
                 Accessory2->SetMaterial(0, CustomerTypes[k].Accessory2Materials[RandAccessory]);
             }
             else
@@ -126,6 +133,7 @@ void ACustomerManager::SpawnCustomerGroup()
             if (CustomerTypes[k].Accessory3Materials.Num() > 0)
             {
                 int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Materials.Num() - 1);
+                CustomerTypeInstance.Accessory3 = RandAccessory;
                 Accessory3->SetMaterial(0, CustomerTypes[k].Accessory3Materials[RandAccessory]);
             }
             else
@@ -134,6 +142,7 @@ void ACustomerManager::SpawnCustomerGroup()
             }
         }
 
+        NewCustomer->SetCustomerTypeInstance(CustomerTypeInstance);
         NewCustomer->SetLeaveTargetPosition(SpawnLocation);
         NewCustomer->SetCustomerManager(this);
         NewCustomer->SetPairOffset(PairSideOffset);
@@ -194,6 +203,22 @@ FVector ACustomerManager::GetQueuePositionForIndex(int32 Index) const
     return CustomerQueueFrontPoint->GetComponentLocation() + (QueueDirection * QueueSpacing * Index);
 }
 
+int32 ACustomerManager::GetCustomerTypeIndex(const FCustomerTypeInstance& CustomerTypeInstance)
+{
+    for (int32 i = 0; i < CustomerTypes.Num(); ++i)
+    {
+        if (CustomerTypes[i].CustomerType != static_cast<ECustomerType>(CustomerTypeInstance.Type) || CustomerTypes[i].bIsMale != static_cast<bool>(CustomerTypeInstance.IsMale))
+        {
+            continue;
+        }
+
+        return i;
+    }
+
+    ensure(false);
+    return -1;
+}
+
 void ACustomerManager::MoveQueueForward()
 {
     if (CustomerQueue.Num() > 0)
@@ -228,6 +253,25 @@ void ACustomerManager::ModifyHappiness(float Amount)
     }
 
     Happiness += Amount;
+}
+
+void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting)
+{
+    UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("MainBody")));
+    UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("Accessory2")));
+    FCustomerTypeInstance CustomerTypeInstance = Customer->GetCustomerTypeInstance();\
+    int32 CustomerTypeIndex = GetCustomerTypeIndex(CustomerTypeInstance);
+
+    if (bIsSitting)
+    {
+        MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].SitMaterial);
+        Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials[CustomerTypeInstance.Accessory2]);
+    }
+    else
+    {
+        MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].BaseMaterial);
+        Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2Materials[CustomerTypeInstance.Accessory2]);
+    }
 }
 
 void ACustomerManager::RemoveCustomerFromQueue(ACustomer* Customer)

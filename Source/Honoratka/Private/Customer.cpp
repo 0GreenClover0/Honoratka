@@ -116,6 +116,7 @@ void ACustomer::SetCustomerState(ECustomerState NewState)
 
 void ACustomer::SetTargetPosition(const FVector& Target)
 {
+    CustomerManager->ChangeCustomerTexture(this, false);
     TargetPosition = Target;
     bMovingToTarget = true;
 }
@@ -147,6 +148,16 @@ void ACustomer::SetLeaveTargetPosition(FVector const& Position)
 void ACustomer::SetCustomerManager(ACustomerManager* NewCustomerManager)
 {
     CustomerManager = NewCustomerManager;
+}
+
+void ACustomer::SetCustomerTypeInstance(const FCustomerTypeInstance& Instance)
+{
+    CustomerTypeInstance = Instance;
+}
+
+FCustomerTypeInstance ACustomer::GetCustomerTypeInstance() const
+{
+    return CustomerTypeInstance;
 }
 
 void ACustomer::GiveDish(EFoodType FoodType)
@@ -247,6 +258,11 @@ void ACustomer::UpdateMovement(float DeltaTime)
 {
     if (HasReachedTarget())
     {
+        if (CurrentState == ECustomerState::Seated)
+        {
+            CustomerManager->ChangeCustomerTexture(this, true);
+        }
+
         bMovingToTarget = false;
         Velocity = FVector::ZeroVector;
         AddActorWorldOffset(Velocity * DeltaTime);

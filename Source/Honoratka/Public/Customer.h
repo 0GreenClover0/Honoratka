@@ -27,6 +27,18 @@ enum class ECustomerHighlight : uint8
     Unknown = 2
 };
 
+USTRUCT()
+struct FCustomerTypeInstance
+{
+    GENERATED_BODY()
+
+    int32 Type;
+    int8 IsMale;
+    int32 Accessory1;
+    int32 Accessory2;
+    int32 Accessory3;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
 
 UCLASS()
@@ -73,6 +85,9 @@ public:
     void SetLeaveTargetPosition(FVector const& Position);
     void SetCustomerManager(ACustomerManager* NewCustomerManager);
 
+    void SetCustomerTypeInstance(const FCustomerTypeInstance& Instance);
+    FCustomerTypeInstance GetCustomerTypeInstance() const;
+
     void GiveDish(EFoodType FoodType);
 
     // Click handling
@@ -114,6 +129,9 @@ private:
 
     UPROPERTY()
     ECustomerState CurrentState;
+
+    UPROPERTY()
+    FCustomerTypeInstance CustomerTypeInstance;
 
     UPROPERTY()
     TObjectPtr<ACustomer> PairedCustomer = nullptr;

@@ -89,6 +89,8 @@ public:
 
     void ModifyHappiness(float Amount);
 
+    void ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting);
+
 protected:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -97,6 +99,7 @@ private:
     void SpawnCustomerGroup();
     void UpdateQueuePositions();
     FVector GetQueuePositionForIndex(int32 Index) const;
+    int32 GetCustomerTypeIndex(const FCustomerTypeInstance& CustomerTypeInstance);
 
 #if WITH_EDITOR
     void DebugDrawQueue() const;
