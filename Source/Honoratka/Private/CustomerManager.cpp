@@ -209,8 +209,14 @@ FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
 {
     FCustomerTypeInstance CustomerTypeInstance = {};
 
-    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 0));
-    bool bIsMale = FMath::RandBool();
+    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 2));
+    bool bIsMale = true;
+
+    // NOTE: Only actors have male and female versions as of now.
+    if (RandomType == ECustomerType::Actor)
+    {
+        bIsMale = FMath::RandBool();
+    }
 
     CustomerTypeInstance.IsMale = bIsMale;
     CustomerTypeInstance.Type = static_cast<int32>(RandomType);
@@ -350,12 +356,20 @@ void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSittin
     if (bIsSitting)
     {
         MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].SitMaterial);
-        Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials[CustomerTypeInstance.Accessory2]);
+
+        if (CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials.Num() > 0)
+        {
+            Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials[CustomerTypeInstance.Accessory2]);
+        }
     }
     else
     {
         MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].BaseMaterial);
-        Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2Materials[CustomerTypeInstance.Accessory2]);
+
+        if (CustomerTypes[CustomerTypeIndex].Accessory2Materials.Num() > 0)
+        {
+            Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2Materials[CustomerTypeInstance.Accessory2]);
+        }
     }
 }
 
