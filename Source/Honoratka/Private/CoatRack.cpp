@@ -3,26 +3,13 @@
 #include <CustomerManager.h>
 #include <Kismet/GameplayStatics.h>
 
-ACoatRack::ACoatRack()
-{
-    static ConstructorHelpers::FObjectFinder<UMaterialInterface> MatFinder(TEXT("/Game/Honoratka/Materials/M_OutlineShader.M_OutlineShader"));
-    OutlineMaterial = MatFinder.Object;
-}
-
 void ACoatRack::BeginPlay()
 {
     Super::BeginPlay();
 
-    RackModel = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName(TEXT("SkeletalMesh")));
+    RackModel = Cast<USkeletalMeshComponent>(GetDefaultSubobjectByName(TEXT("MainMesh")));
     RackCollider = Cast<UBoxComponent>(GetDefaultSubobjectByName(TEXT("Collider")));
     ResetTimeToFall();
-
-    RackCollider->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    RackCollider->SetCollisionResponseToAllChannels(ECR_Ignore);
-    RackCollider->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-
-    RackCollider->OnBeginCursorOver.AddDynamic(this, &ACoatRack::OnHoverBegin);
-    RackCollider->OnEndCursorOver.AddDynamic(this, &ACoatRack::OnHoverEnd);
 }
 
 void ACoatRack::Tick(float DeltaTime)
@@ -83,14 +70,4 @@ void ACoatRack::Interact_Implementation()
     {
         ResetTimeToFall();
     }
-}
-
-void ACoatRack::OnHoverBegin(UPrimitiveComponent* TouchedComponent)
-{
-    RackModel->SetOverlayMaterial(OutlineMaterial);
-}
-
-void ACoatRack::OnHoverEnd(UPrimitiveComponent* TouchedComponent)
-{
-    RackModel->SetOverlayMaterial(nullptr);
 }
