@@ -76,6 +76,7 @@ DerivedDataCache/*
 
 # ReSharper cache
 _ReSharper.Caches/*
+.idea/*
 
 # ReSharper User settings
 Honoratka.sln.DotSettings.user
