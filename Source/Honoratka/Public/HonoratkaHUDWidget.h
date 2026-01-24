@@ -14,9 +14,9 @@ class HONORATKA_API UHonoratkaHUDWidget : public UUserWidget
     GENERATED_BODY()
 
 public:
-    UPROPERTY(meta = (BindWidget))
-    TObjectPtr<class UTimerWidget> TimerWidget;
-
     UFUNCTION()
     void SetTimer(ATimer* Timer);
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<class UTimerWidget> TimerWidget;
 };
