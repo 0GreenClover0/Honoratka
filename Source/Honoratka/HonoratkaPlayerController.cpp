@@ -5,9 +5,12 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#include "Blueprint/UserWidget.h"
 #include "Engine/LocalPlayer.h"
 #include "Honoratka.h"
+#include "HonoratkaHUDWidget.h"
 #include "Interactable.h"
+#include "TimerWidget.h"
 
 AHonoratkaPlayerController::AHonoratkaPlayerController()
 {
@@ -41,6 +44,30 @@ void AHonoratkaPlayerController::SetupInputComponent()
         {
             UE_LOG(LogHonoratka, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
         }
+    }
+}
+
+void AHonoratkaPlayerController::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (IsLocalController() && HUDWidgetClass)
+    {
+        HUDWidget = Cast<UHonoratkaHUDWidget>(CreateWidget<UUserWidget>(this, HUDWidgetClass));
+        // HUDWidget->TimerWidget = CreateWidget<UTimerWidget>(this, UTimerWidget::StaticClass());
+
+        FActorSpawnParameters Params;
+        Params.SpawnCollisionHandlingOverride =
+            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+        ATimer* TimerActor = GetWorld()->SpawnActor<ATimer>(
+            ATimer::StaticClass(),
+            FTransform(),
+            Params
+        );
+
+        HUDWidget->SetTimer(TimerActor);
+        HUDWidget->AddToViewport();
     }
 }
 

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Timer.h"
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "HonoratkaPlayerController.generated.h"
 
+class UHonoratkaHUDWidget;
 class AInteractable;
 class UNiagaraSystem;
 class UInputMappingContext;
@@ -27,7 +29,8 @@ public:
 protected:
     // Initialize input bindings
     virtual void SetupInputComponent() override;
-    
+    virtual void BeginPlay() override;
+
     // Input handlers
     void OnLeftMouseClickStarted();
     void OnLeftMouseClickTriggered();
@@ -35,17 +38,27 @@ protected:
 
 protected:
     // FX Class that we will spawn when clicking
-    UPROPERTY(EditAnywhere, Category="Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UNiagaraSystem* FXCursor = nullptr;
 
     // MappingContext
-    UPROPERTY(EditAnywhere, Category="Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputMappingContext* DefaultMappingContext = nullptr;
 
-    UPROPERTY(EditAnywhere, Category="Input")
+    UPROPERTY(EditAnywhere, Category = "Input")
     UInputAction* LeftMouseClickAction = nullptr;
 
+    UPROPERTY(EditDefaultsOnly, Category = "HUD")
+    TSubclassOf<UUserWidget> HUDWidgetClass;
+
+    UPROPERTY()
+    TObjectPtr<UHonoratkaHUDWidget> HUDWidget;
+
 private:
+
+    UPROPERTY()
+    TSubclassOf<ATimer> Timer;
+
     UPROPERTY()
     AInteractable* CurrentInteractable = nullptr;
 };

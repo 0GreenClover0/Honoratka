@@ -148,7 +148,7 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
     }
     else
     {
-        // Likely unfamiliar but there IS a very tiny chance for a familiar guy, leaving it like that
+        // Likely unfamiliar but there IS a chance for a familiar guy, leaving it like that
         CustomerTypeInstance = GenerateRandomCustomerInstance();
     }
 
