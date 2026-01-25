@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "HonoratkaPlayerController.generated.h"
 
+class ACustomerManager;
 class UHonoratkaHUDWidget;
 class AInteractable;
 class UNiagaraSystem;
@@ -26,6 +27,12 @@ class AHonoratkaPlayerController : public APlayerController
 public:
     AHonoratkaPlayerController();
 
+    UFUNCTION()
+    UHonoratkaHUDWidget* GetHonoratkaHUD() const { return HUDWidget; }
+
+    UPROPERTY()
+    TObjectPtr<ACustomerManager> CustomerManagerPtr;
+
 protected:
     // Initialize input bindings
     virtual void SetupInputComponent() override;
@@ -36,7 +43,6 @@ protected:
     void OnLeftMouseClickTriggered();
     void OnLeftMouseClickReleased();
 
-protected:
     // FX Class that we will spawn when clicking
     UPROPERTY(EditAnywhere, Category = "Input")
     UNiagaraSystem* FXCursor = nullptr;

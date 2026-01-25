@@ -39,6 +39,24 @@ struct FCustomerTypeInstance
     int32 Accessory3;
 };
 
+USTRUCT(BlueprintType)
+struct FCustomerWidgetPayload
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> MainBody;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> Accessory1;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> Accessory2;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TSoftObjectPtr<UTexture2D> Accessory3;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
 
 UCLASS()
@@ -109,6 +127,9 @@ public:
 
     UPROPERTY(EditAnywhere)
     UTexture2D* AngryTexture = nullptr;
+
+    UPROPERTY(BlueprintReadOnly)
+    FCustomerWidgetPayload CustomerWidgetPayload;
 
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")

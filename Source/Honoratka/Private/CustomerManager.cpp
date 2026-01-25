@@ -1,6 +1,8 @@
 #include "CustomerManager.h"
 
 #include "CustomerWork.h"
+#include "HonoratkaHUDWidget.h"
+#include "HonoratkaPlayerController.h"
 #include "Components/CapsuleComponent.h"
 
 ACustomerManager::ACustomerManager()
@@ -20,6 +22,11 @@ void ACustomerManager::BeginPlay()
     // Get album and initialize with random familiar customers
     if (CustomerAlbumReference)
     {
+        AHonoratkaPlayerController* PC = Cast<AHonoratkaPlayerController>(
+            GetWorld()->GetFirstPlayerController());
+
+        PC->CustomerManagerPtr = this;
+
         for (int32 i = 0; i < CustomerAlbumReference->FamiliarCustomersNum; ++i)
         {
             const FCustomerTypeInstance CustomerTypeInstance = GenerateRandomCustomerInstance();
@@ -195,6 +202,11 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
             Accessory3->SetMaterial(0, TransparentMaterial);
         }
     }
+
+    // NewCustomer->CustomerWidgetPayload =
+    // {
+    // 
+    // };
 
     NewCustomer->SetCustomerTypeInstance(CustomerTypeInstance);
     NewCustomer->SetLeaveTargetPosition(LeaveTargetLocation);

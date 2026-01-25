@@ -1,4 +1,6 @@
 #include "HonoratkaPlayerController.h"
+
+#include "CustomerManager.h"
 #include "GameFramework/Pawn.h"
 #include "HonoratkaCharacter.h"
 #include "Engine/World.h"
@@ -54,7 +56,6 @@ void AHonoratkaPlayerController::BeginPlay()
     if (IsLocalController() && HUDWidgetClass)
     {
         HUDWidget = Cast<UHonoratkaHUDWidget>(CreateWidget<UUserWidget>(this, HUDWidgetClass));
-        // HUDWidget->TimerWidget = CreateWidget<UTimerWidget>(this, UTimerWidget::StaticClass());
 
         FActorSpawnParameters Params;
         Params.SpawnCollisionHandlingOverride =
@@ -67,6 +68,13 @@ void AHonoratkaPlayerController::BeginPlay()
         );
 
         HUDWidget->SetTimer(TimerActor);
+
+        // Pass known customers to album
+        for (const FCustomerTypeInstance Customer : CustomerManagerPtr->CustomerAlbumReference->GetAllFamiliarCustomers())
+        {
+            HUDWidget->RegisterCustomer(Customer);
+        }
+
         HUDWidget->AddToViewport();
     }
 }
