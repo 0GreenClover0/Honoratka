@@ -47,5 +47,6 @@ private:
     float WarningTime = 8.5f;
     bool bHasPlayedWarningSound = false;
 
+    UPROPERTY()
     TObjectPtr<AGameManager> GameManager = nullptr;
 };
