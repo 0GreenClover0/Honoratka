@@ -59,6 +59,9 @@ public:
     UPROPERTY(EditAnywhere)
     TArray<FFoodItem> FoodItems;
 
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<USoundBase> ClockWarningSound = nullptr;
+
 private:
     bool bIsPaused = false;
 

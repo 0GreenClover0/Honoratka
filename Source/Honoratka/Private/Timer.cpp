@@ -1,5 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #include "Timer.h"
+
+#include "GameManager.h"
+#include "Kismet/GameplayStatics.h"
 
 ATimer::ATimer()
 {
@@ -29,9 +31,17 @@ FString ATimer::GetTimeLeftReadable()
     return FString::Printf(TEXT("%02d:%02d"), Minutes, Secs);
 }
 
+float ATimer::GetTimeLeft() const
+{
+    return TimeLeft;
+}
+
 void ATimer::BeginPlay()
 {
     Super::BeginPlay();
+
+    GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+
     SetTimer();
 }
 
@@ -43,6 +53,12 @@ void ATimer::Tick(float DeltaTime)
 void ATimer::OnTimerFired()
 {
     TimeLeft -= TimerInterval;
+
+    if (!bHasPlayedWarningSound && TimeLeft <= WarningTime)
+    {
+        bHasPlayedWarningSound = true;
+        UGameplayStatics::PlaySound2D(GetWorld(), GameManager->ClockWarningSound);
+    }
 
     if (TimeLeft <= TimerInterval)
     {
