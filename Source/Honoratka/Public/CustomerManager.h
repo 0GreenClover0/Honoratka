@@ -53,22 +53,22 @@ struct FCustomerType
     bool bIsMale;
 
     UPROPERTY(EditAnywhere)
-    TObjectPtr<UMaterial> BaseMaterial;
+    TObjectPtr<UTexture2D> BaseImage;
 
     UPROPERTY(EditAnywhere)
-    TObjectPtr<UMaterial> SitMaterial;
+    TObjectPtr<UTexture2D> SitImage;
 
     UPROPERTY(EditAnywhere)
-    TArray<TObjectPtr<UMaterial>> Accessory1Materials;
+    TArray<TObjectPtr<UTexture2D>> Accessory1Images;
 
     UPROPERTY(EditAnywhere)
-    TArray<TObjectPtr<UMaterial>> Accessory2Materials;
+    TArray<TObjectPtr<UTexture2D>> Accessory2Images;
 
     UPROPERTY(EditAnywhere)
-    TArray<TObjectPtr<UMaterial>> Accessory3Materials;
+    TArray<TObjectPtr<UTexture2D>> Accessory3Images;
 
     UPROPERTY(EditAnywhere)
-    TArray<TObjectPtr<UMaterial>> Accessory2SitMaterials;
+    TArray<TObjectPtr<UTexture2D>> Accessory2SitImages;
 };
 
 UCLASS()
@@ -116,7 +116,7 @@ public:
     TArray<FCustomerType> CustomerTypes = {};
 
     UPROPERTY(EditAnywhere, Category = "Customer Types")
-    TObjectPtr<UMaterial> TransparentMaterial = nullptr;
+    TObjectPtr<UTexture2D> TransparentImage = nullptr;
 
     // Configuration
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning")
@@ -167,6 +167,13 @@ public:
     int NumberOfCustomersInside = 0;
 
 private:
+
+    UFUNCTION()
+    UMaterialInstanceDynamic* CreateAndSetCustomerImage(UStaticMeshComponent* Mesh, UTexture2D* Texture);
+
+    UFUNCTION()
+    void SetCustomerImage(UMaterialInstanceDynamic* MaterialInstance, UTexture2D* Texture);
+
     UPROPERTY()
     TArray<FCustomerSlot> CustomerQueue;
 

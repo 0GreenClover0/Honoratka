@@ -159,6 +159,8 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
         CustomerTypeInstance = GenerateRandomCustomerInstance();
     }
 
+    FCustomerWidgetPayload Payload;
+
     for (int32 k = 0; k < CustomerTypes.Num(); ++k)
     {
         if (CustomerTypes[k].CustomerType != static_cast<ECustomerType>(CustomerTypeInstance.Type) || CustomerTypes[k].bIsMale != static_cast<bool>(CustomerTypeInstance.IsMale))
@@ -167,47 +169,50 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
         }
 
         UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("MainBody")));
-        MainBody->SetMaterial(0, CustomerTypes[k].BaseMaterial);
+        NewCustomer->MainBodyMat = CreateAndSetCustomerImage(MainBody, CustomerTypes[k].BaseImage);
+        Payload.MainBody = CustomerTypes[k].BaseImage;
 
         UStaticMeshComponent* Accessory1 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory1")));
-        if (CustomerTypes[k].Accessory1Materials.Num() > 0 && CustomerTypeInstance.Accessory1 >= 0)
+        if (CustomerTypes[k].Accessory1Images.Num() > 0 && CustomerTypeInstance.Accessory1 >= 0)
         {
             const int32 AccessoryId = CustomerTypeInstance.Accessory1;
-            Accessory1->SetMaterial(0, CustomerTypes[k].Accessory1Materials[AccessoryId]);
+            NewCustomer->Accessory1Mat = CreateAndSetCustomerImage(Accessory1, CustomerTypes[k].Accessory1Images[AccessoryId]);
+            Payload.Accessory1 = CustomerTypes[k].Accessory1Images[AccessoryId];
         }
         else
         {
-            Accessory1->SetMaterial(0, TransparentMaterial);
+            NewCustomer->Accessory1Mat = CreateAndSetCustomerImage(Accessory1, TransparentImage);
+            Payload.Accessory1 = TransparentImage;
         }
 
         UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory2")));
-        if (CustomerTypes[k].Accessory2Materials.Num() > 0 && CustomerTypeInstance.Accessory2 >= 0)
+        if (CustomerTypes[k].Accessory2Images.Num() > 0 && CustomerTypeInstance.Accessory2 >= 0)
         {
             const int32 AccessoryId = CustomerTypeInstance.Accessory2;
-            Accessory2->SetMaterial(0, CustomerTypes[k].Accessory2Materials[AccessoryId]);
+            NewCustomer->Accessory2Mat = CreateAndSetCustomerImage(Accessory2, CustomerTypes[k].Accessory2Images[AccessoryId]);
+            Payload.Accessory2 = CustomerTypes[k].Accessory2Images[AccessoryId];
         }
         else
         {
-            Accessory2->SetMaterial(0, TransparentMaterial);
+            NewCustomer->Accessory2Mat = CreateAndSetCustomerImage(Accessory2, TransparentImage);
+            Payload.Accessory2 = TransparentImage;
         }
 
         UStaticMeshComponent* Accessory3 = Cast<UStaticMeshComponent>(NewCustomer->GetDefaultSubobjectByName(TEXT("Accessory3")));
-        if (CustomerTypes[k].Accessory3Materials.Num() > 0 && CustomerTypeInstance.Accessory3 >= 0)
+        if (CustomerTypes[k].Accessory3Images.Num() > 0 && CustomerTypeInstance.Accessory3 >= 0)
         {
             const int32 AccessoryId = CustomerTypeInstance.Accessory3;
-            Accessory3->SetMaterial(0, CustomerTypes[k].Accessory3Materials[AccessoryId]);
+            NewCustomer->Accessory3Mat = CreateAndSetCustomerImage(Accessory3, CustomerTypes[k].Accessory3Images[AccessoryId]);
+            Payload.Accessory3 = CustomerTypes[k].Accessory3Images[AccessoryId];
         }
         else
         {
-            Accessory3->SetMaterial(0, TransparentMaterial);
+            NewCustomer->Accessory3Mat = CreateAndSetCustomerImage(Accessory3, TransparentImage);
+            Payload.Accessory3 = TransparentImage;
         }
     }
 
-    // NewCustomer->CustomerWidgetPayload =
-    // {
-    // 
-    // };
-
+    NewCustomer->CustomerWidgetPayload = Payload;
     NewCustomer->SetCustomerTypeInstance(CustomerTypeInstance);
     NewCustomer->SetLeaveTargetPosition(LeaveTargetLocation);
     NewCustomer->SetCustomerManager(this);
@@ -240,9 +245,9 @@ FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
             continue;
         }
 
-        if (CustomerTypes[k].Accessory1Materials.Num() > 0)
+        if (CustomerTypes[k].Accessory1Images.Num() > 0)
         {
-            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Materials.Num() - 1);
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory1Images.Num() - 1);
             CustomerTypeInstance.Accessory1 = RandAccessory;
         }
         else
@@ -250,9 +255,9 @@ FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
             CustomerTypeInstance.Accessory1 = INDEX_NONE;
         }
 
-        if (CustomerTypes[k].Accessory2Materials.Num() > 0)
+        if (CustomerTypes[k].Accessory2Images.Num() > 0)
         {
-            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Materials.Num() - 1);
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory2Images.Num() - 1);
             CustomerTypeInstance.Accessory2 = RandAccessory;
         }
         else
@@ -260,9 +265,9 @@ FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
             CustomerTypeInstance.Accessory2 = INDEX_NONE;
         }
 
-        if (CustomerTypes[k].Accessory3Materials.Num() > 0)
+        if (CustomerTypes[k].Accessory3Images.Num() > 0)
         {
-            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Materials.Num() - 1);
+            int32 RandAccessory = FMath::RandRange(0, CustomerTypes[k].Accessory3Images.Num() - 1);
             CustomerTypeInstance.Accessory3 = RandAccessory;
         }
         else
@@ -360,27 +365,25 @@ void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSittin
         Cast<UCapsuleComponent>(Customer->GetDefaultSubobjectByName(TEXT("CollisionCylinder")))->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
     }
 
-    UStaticMeshComponent* MainBody = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("MainBody")));
-    UStaticMeshComponent* Accessory2 = Cast<UStaticMeshComponent>(Customer->GetDefaultSubobjectByName(TEXT("Accessory2")));
     FCustomerTypeInstance CustomerTypeInstance = Customer->GetCustomerTypeInstance();
     int32 CustomerTypeIndex = GetCustomerTypeIndex(CustomerTypeInstance);
 
     if (bIsSitting)
     {
-        MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].SitMaterial);
+        SetCustomerImage(Customer->MainBodyMat, CustomerTypes[CustomerTypeIndex].SitImage);
 
-        if (CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials.Num() > 0)
+        if (CustomerTypes[CustomerTypeIndex].Accessory2SitImages.Num() > 0)
         {
-            Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2SitMaterials[CustomerTypeInstance.Accessory2]);
+            SetCustomerImage(Customer->Accessory2Mat, CustomerTypes[CustomerTypeIndex].Accessory2SitImages[CustomerTypeInstance.Accessory2]);
         }
     }
     else
     {
-        MainBody->SetMaterial(0, CustomerTypes[CustomerTypeIndex].BaseMaterial);
+        SetCustomerImage(Customer->MainBodyMat, CustomerTypes[CustomerTypeIndex].BaseImage);
 
-        if (CustomerTypes[CustomerTypeIndex].Accessory2Materials.Num() > 0)
+        if (CustomerTypes[CustomerTypeIndex].Accessory2Images.Num() > 0)
         {
-            Accessory2->SetMaterial(0, CustomerTypes[CustomerTypeIndex].Accessory2Materials[CustomerTypeInstance.Accessory2]);
+            SetCustomerImage(Customer->Accessory2Mat, CustomerTypes[CustomerTypeIndex].Accessory2Images[CustomerTypeInstance.Accessory2]);
         }
     }
 }
@@ -462,3 +465,18 @@ void ACustomerManager::DebugDrawQueue() const
     }
 }
 #endif
+
+UMaterialInstanceDynamic* ACustomerManager::CreateAndSetCustomerImage(UStaticMeshComponent* Mesh, UTexture2D* Texture)
+{
+    UMaterialInstanceDynamic* DynamicMat = Mesh->CreateAndSetMaterialInstanceDynamic(0);
+    SetCustomerImage(DynamicMat, Texture);
+    return DynamicMat;
+}
+
+void ACustomerManager::SetCustomerImage(UMaterialInstanceDynamic* MaterialInstance, UTexture2D* Texture)
+{
+    if (MaterialInstance)
+    {
+        MaterialInstance->SetTextureParameterValue(FName("MaterialImage"), Texture);
+    }
+}

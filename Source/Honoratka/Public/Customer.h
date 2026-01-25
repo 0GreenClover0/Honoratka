@@ -45,16 +45,16 @@ struct FCustomerWidgetPayload
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UTexture2D> MainBody;
+    TObjectPtr<UTexture2D> MainBody;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UTexture2D> Accessory1;
+    TObjectPtr<UTexture2D> Accessory1;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UTexture2D> Accessory2;
+    TObjectPtr<UTexture2D> Accessory2;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TSoftObjectPtr<UTexture2D> Accessory3;
+    TObjectPtr<UTexture2D> Accessory3;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnBubbleDelegate);
@@ -130,6 +130,20 @@ public:
 
     UPROPERTY(BlueprintReadOnly)
     FCustomerWidgetPayload CustomerWidgetPayload;
+
+    // Pointers to dynamic material instances for swapping images
+    UPROPERTY()
+    TObjectPtr<UMaterialInstanceDynamic> MainBodyMat;
+
+    UPROPERTY()
+    TObjectPtr<UMaterialInstanceDynamic> Accessory1Mat;
+
+    UPROPERTY()
+    TObjectPtr<UMaterialInstanceDynamic> Accessory2Mat;
+
+    UPROPERTY()
+    TObjectPtr<UMaterialInstanceDynamic> Accessory3Mat;
+    // ---
 
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
