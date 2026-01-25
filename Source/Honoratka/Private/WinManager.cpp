@@ -2,7 +2,7 @@
 #include "WinManager.h"
 
 #include "Timer.h"
-#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AWinManager::AWinManager()
 {
@@ -30,7 +30,7 @@ void AWinManager::BeginPlay()
 
 void AWinManager::HandleTimerFinished()
 {
-    //UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
+    // UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, false);
 }
 
 void AWinManager::Tick(float DeltaTime)

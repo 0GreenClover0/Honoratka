@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AlbumWidget.generated.h"
 
-struct FBPCustomerTypeInstance;
+struct FCustomerWidgetPayload;
 
 /**
  *
@@ -16,5 +16,5 @@ class HONORATKA_API UAlbumWidget : public UUserWidget
 
 public:
     UFUNCTION(BlueprintImplementableEvent)
-    void AddCustomerToScrollBox(const FBPCustomerTypeInstance& CustomerTypeInstance);
+    void AddCustomerToScrollBox(const FCustomerWidgetPayload& CustomerTypeInstance);
 };

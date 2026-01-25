@@ -13,6 +13,7 @@
 #include "HonoratkaHUDWidget.h"
 #include "Interactable.h"
 #include "TimerWidget.h"
+#include "WinManager.h"
 
 AHonoratkaPlayerController::AHonoratkaPlayerController()
 {
@@ -58,14 +59,27 @@ void AHonoratkaPlayerController::BeginPlay()
         HUDWidget = Cast<UHonoratkaHUDWidget>(CreateWidget<UUserWidget>(this, HUDWidgetClass));
 
         FActorSpawnParameters Params;
-        Params.SpawnCollisionHandlingOverride =
-            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
         ATimer* TimerActor = GetWorld()->SpawnActor<ATimer>(
             ATimer::StaticClass(),
-            FTransform(),
+            FTransform::Identity,
             Params
         );
+
+        // --- Begin deferred spawning
+        AWinManager* WinManager = GetWorld()->SpawnActorDeferred<AWinManager>(
+            AWinManager::StaticClass(),
+            FTransform::Identity,
+            nullptr,
+            nullptr,
+            ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+        );
+
+        if (WinManager)
+        {
+            WinManager->SetTimerRef(TimerActor);
+            WinManager->FinishSpawning(FTransform::Identity);
+        }
+        // --- End deferred spawning
 
         HUDWidget->SetTimer(TimerActor);
 

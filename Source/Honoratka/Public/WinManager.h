@@ -14,14 +14,16 @@ public:
     AWinManager();
     virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere)
-    ATimer* TimerRef = nullptr;
+    UFUNCTION()
+    virtual void SetTimerRef(ATimer* Timer) { TimerRef = Timer; }
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+    ATimer* TimerRef;
 
 protected:
     virtual void BeginPlay() override;
 
 private:
-
     UFUNCTION()
     void HandleTimerFinished();
 };
