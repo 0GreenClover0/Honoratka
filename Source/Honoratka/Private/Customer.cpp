@@ -17,6 +17,13 @@ void ACustomer::BeginPlay()
 {
     Super::BeginPlay();
 
+    Mesh = Cast<UStaticMeshComponent>(GetDefaultSubobjectByName(TEXT("MainBody")));
+    OutlineMaterial = Mesh->GetOverlayMaterial();
+
+    OutlineDynamicMaterial = Cast<UMaterialInstanceDynamic>(OutlineMaterial);
+    OutlineDynamicMaterial = UMaterialInstanceDynamic::Create(OutlineMaterial, this);
+    Mesh->SetOverlayMaterial(OutlineDynamicMaterial);
+
     CurrentState = ECustomerState::Idle;
     Velocity = FVector::ZeroVector;
     bMovingToTarget = false;
@@ -381,6 +388,19 @@ void ACustomer::ChangeHighlight()
     }
 
     Highlight = (ECustomerHighlight)HighlightInt;
+
+    switch (HighlightInt)
+    {
+    case(0):
+        OutlineDynamicMaterial->SetVectorParameterValue("Color", FLinearColor(0.0f, 0.0f, 0.0f, 0.0f));
+        break;
+    case(1):
+        OutlineDynamicMaterial->SetVectorParameterValue("Color", FLinearColor::Red);
+        break;
+    case(2):
+        OutlineDynamicMaterial->SetVectorParameterValue("Color", FLinearColor::Green);
+        break;
+    }
 
     UE_LOG(LogTemp, Log, TEXT("Customer: My Highlight is: %d"), HighlightInt);
 }

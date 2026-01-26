@@ -371,6 +371,7 @@ void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSittin
     if (bIsSitting)
     {
         SetCustomerImage(Customer->MainBodyMat, CustomerTypes[CustomerTypeIndex].SitImage);
+        Customer->OutlineDynamicMaterial->SetTextureParameterValue("Texture", CustomerTypes[CustomerTypeIndex].SitImage);
 
         if (CustomerTypes[CustomerTypeIndex].Accessory2SitImages.Num() > 0)
         {
@@ -380,6 +381,7 @@ void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSittin
     else
     {
         SetCustomerImage(Customer->MainBodyMat, CustomerTypes[CustomerTypeIndex].BaseImage);
+        Customer->OutlineDynamicMaterial->SetTextureParameterValue("Texture", CustomerTypes[CustomerTypeIndex].BaseImage);
 
         if (CustomerTypes[CustomerTypeIndex].Accessory2Images.Num() > 0)
         {

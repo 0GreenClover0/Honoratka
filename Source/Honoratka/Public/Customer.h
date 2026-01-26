@@ -144,6 +144,8 @@ public:
     UPROPERTY()
     TObjectPtr<UMaterialInstanceDynamic> Accessory3Mat;
     // ---
+    
+    TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMaterial;
 
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
@@ -226,6 +228,8 @@ private:
     FTimerHandle TimerHandle;
 
     ECustomerHighlight Highlight = ECustomerHighlight::Noone;
+    TObjectPtr<UStaticMeshComponent> Mesh;
+    TObjectPtr<UMaterialInterface> OutlineMaterial;
 
     void UpdateAngriness(float DeltaTime);
     void UpdatePresence(float DeltaTime);
