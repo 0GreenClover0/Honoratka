@@ -226,13 +226,38 @@ FCustomerTypeInstance ACustomerManager::GenerateRandomCustomerInstance() const
 {
     FCustomerTypeInstance CustomerTypeInstance = {};
 
-    ECustomerType RandomType = static_cast<ECustomerType>(FMath::RandRange(0, 2));
-    bool bIsMale = true;
+    // NOTE: Choose the customer (type + gender) randomly, but equally to the combinations of clothes that each of them has.
+    //       Ex. If we only had a male actor that has 9 combinations and an actress that has 27 combinations, the chance to choose an actor would be 9/36 = 25% and for actress it would be 27/36 = 75%.
+    //       This is done so that each combination shows up equally frequently.
 
-    // NOTE: Only actors have male and female versions as of now.
-    if (RandomType == ECustomerType::Actor)
+    // 
+    // HACK: Number from 1 to 9 is an actor.
+    //       Number from 10 to 36 is an actress.
+    //       Number from 37 to 45 is a director.
+    //       Number from 46 to 72 is a writer.
+    int32 Random = FMath::RandRange(1, 72);
+    ECustomerType RandomType;
+    bool bIsMale;
+
+    if (Random <= 9)
     {
-        bIsMale = FMath::RandBool();
+        RandomType = ECustomerType::Actor;
+        bIsMale = true;
+    }
+    else if (Random <= 36)
+    {
+        RandomType = ECustomerType::Actor;
+        bIsMale = false;
+    }
+    else if (Random <= 45)
+    {
+        RandomType = ECustomerType::Director;
+        bIsMale = true;
+    }
+    else
+    {
+        RandomType = ECustomerType::Screenwriter;
+        bIsMale = true;
     }
 
     CustomerTypeInstance.IsMale = bIsMale;
