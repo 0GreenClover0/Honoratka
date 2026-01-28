@@ -6,6 +6,7 @@
 #include "CustomerAlbum.h"
 #include "CustomerManager.generated.h"
 
+class UCustomerWork;
 class UCustomerBubbleWidget;
 class UCustomerGreatWorkWidget;
 
@@ -19,18 +20,6 @@ struct FCustomerSlot
 
     UPROPERTY()
     FVector QueuePosition;
-};
-
-USTRUCT(BlueprintType)
-struct FGreatCustomerWork
-{
-    GENERATED_BODY()
-
-    UPROPERTY(EditAnywhere)
-    TObjectPtr<UTexture2D> PosterTexture;
-
-    UPROPERTY(EditAnywhere)
-    FText Description;
 };
 
 UENUM(BlueprintType)
@@ -109,9 +98,6 @@ private:
 #endif
 
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Works")
-    TArray<FGreatCustomerWork> GreatCustomerWorks = {};
-
     UPROPERTY(EditAnywhere, Category = "Customer Types")
     TArray<FCustomerType> CustomerTypes = {};
 
@@ -137,6 +123,9 @@ public:
     // Customer bubble reference
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UCustomerBubbleWidget> BubbleWidget;
+
+    UPROPERTY(EditAnywhere)
+    TArray<UCustomerWork*> GreatWorks;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UCustomerGreatWorkWidget> GreatWorkWidgetClass;

@@ -36,6 +36,12 @@ void ACustomerManager::BeginPlay()
 
     TimeSinceLastSpawn = 0.0f;
     NextSpawnTime = FMath::FRandRange(MinSpawnInterval, MaxSpawnInterval);
+
+    TInlineComponentArray<UCustomerWork*> CustomerWorkComponents(GetOwner(), false);
+    GetComponents(CustomerWorkComponents);
+
+    GreatWorks.Reserve(CustomerWorkComponents.Num());
+    GreatWorks.Append(CustomerWorkComponents);
 }
 
 void ACustomerManager::Tick(float DeltaTime)
@@ -218,7 +224,7 @@ TObjectPtr<ACustomer> ACustomerManager::SpawnSingleCustomer(const FVector& Offse
     NewCustomer->SetCustomerManager(this);
     NewCustomer->SetPairOffset(PairSideOffset);
     NewCustomer->SetWidgetClass(BubbleWidget);
-    NewCustomer->GetComponentByClass<UCustomerWork>()->GreatWork = GreatCustomerWorks[FMath::RandRange(0, GreatCustomerWorks.Num() - 1)];
+
     return NewCustomer;
 }
 

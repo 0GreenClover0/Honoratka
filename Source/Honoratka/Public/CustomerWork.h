@@ -7,38 +7,61 @@
 
 class ACustomer;
 
+USTRUCT()
+struct FGreatWorkRequirements
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere)
+    int8 MaleActors;
+
+    UPROPERTY(EditAnywhere)
+    int8 FemaleActors;
+
+    UPROPERTY(EditAnywhere)
+    int8 Directors;
+
+    UPROPERTY(EditAnywhere)
+    int8 Screenwriters;
+
+    bool operator==(const FGreatWorkRequirements& Requirements) const = default;
+};
+
 UCLASS( Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HONORATKA_API UCustomerWork : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UCustomerWork();
+public:    
+    UCustomerWork();
+    
+    bool AdvanceWork(float Amount);
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-public:
-	UPROPERTY()
-	FGreatCustomerWork GreatWork;
+    const TArray<FGreatWorkRequirements>& GetRequirements() const;
 
 protected:
-	UPROPERTY()
-	float WorkProgress = 0.0f;
+    UPROPERTY()
+    float WorkProgress = 0.0f;
 
-	UPROPERTY(EditAnywhere)
-	float WorkSpeed = 10.0f;
+    UPROPERTY()
+    bool bWorkFinished = false;
 
-	UPROPERTY()
-	bool bWorkFinished = false;
+    UPROPERTY(EditAnywhere, Category="Great Work")
+    float WorkSpeed = 10.0f;
 
-	UPROPERTY()
-	TObjectPtr<UCustomerGreatWorkWidget> GreatWorkWidget = nullptr;
+    UPROPERTY(EditAnywhere, Category="Great Work")
+    TObjectPtr<UTexture2D> PosterTexture;
+
+    UPROPERTY(EditAnywhere, meta = (MultiLine="true"), Category="Great Work")
+    FText Description;
+
+    UPROPERTY(EditAnywhere, Category="Great Work")
+    TArray<FGreatWorkRequirements> Requirements;
+
+    UPROPERTY()
+    TObjectPtr<UCustomerGreatWorkWidget> GreatWorkWidget = nullptr;
 
 private:
-	UPROPERTY()
-	TObjectPtr<ACustomer> Customer = nullptr;
+    UPROPERTY()
+    TObjectPtr<ACustomer> Customer = nullptr;
 };

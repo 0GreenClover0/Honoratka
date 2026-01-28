@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "HonoratkaTable.generated.h"
 
+class ACustomerManager;
 class AGameManager;
 class ACustomer;
 
@@ -78,6 +79,9 @@ protected:
 private:
     UPROPERTY()
     AGameManager* GameManager = nullptr;
+
+    UPROPERTY()
+    ACustomerManager* CustomerManager = nullptr;
 
     UPROPERTY()
     TArray<FTableSeat> Seats;

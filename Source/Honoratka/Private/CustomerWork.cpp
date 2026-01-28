@@ -1,9 +1,7 @@
 #include "CustomerWork.h"
 
-#include "Customer.h"
 #include "CustomerGreatWorkWidget.h"
 #include "CustomerManager.h"
-#include "HonoratkaTable.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -11,69 +9,34 @@
 
 UCustomerWork::UCustomerWork()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UCustomerWork::BeginPlay()
+bool UCustomerWork::AdvanceWork(float Amount)
 {
-	Super::BeginPlay();
+    if (bWorkFinished)
+    {
+        return false;
+    }
 
-	Customer = Cast<ACustomer>(GetOwner());
+    WorkProgress += WorkSpeed * Amount;
 
-	ensure(Customer);
+    if (WorkProgress >= 100.0f)
+    {
+        bWorkFinished = true;
+
+        ACustomerManager* CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+        GreatWorkWidget = CreateWidget<UCustomerGreatWorkWidget>(GetWorld(), CustomerManager->GreatWorkWidgetClass);
+
+        GreatWorkWidget->AddToViewport();
+        GreatWorkWidget->GetPosterImage()->SetBrushFromTexture(PosterTexture);
+        GreatWorkWidget->GetDescriptionText()->SetText(Description);
+    }
+
+    return true;
 }
 
-void UCustomerWork::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+const TArray<FGreatWorkRequirements>& UCustomerWork::GetRequirements() const
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (bWorkFinished)
-	{
-		return;
-	}
-
-	bool bCustomerIsAtTable = Customer->Table != nullptr;
-
-	if (!bCustomerIsAtTable)
-	{
-		return;
-	}
-
-	// TODO: Currently this requires any one other customer to seat at the table as well. Make it more sophisticated.
-
-	auto Customers = Customer->Table->GetCustomers();
-	
-	bool bAnyOtherCustomer = false;
-	for (const auto& OtherCustomer : Customers)
-	{
-		if (OtherCustomer != Customer)
-		{
-			bAnyOtherCustomer = true;
-		}
-	}
-
-	if (bAnyOtherCustomer)
-	{
-		WorkProgress += WorkSpeed * DeltaTime;
-	}
-
-	if (WorkProgress >= 100.0f)
-	{
-		bWorkFinished = true;
-
-		for (const auto& OtherCustomer : Customers)
-		{
-			if (OtherCustomer != Customer && OtherCustomer->GetComponentByClass<UCustomerWork>()->bWorkFinished)
-			{
-				return;
-			}
-		}
-
-		ACustomerManager* CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
-		GreatWorkWidget = CreateWidget<UCustomerGreatWorkWidget>(GetWorld(), CustomerManager->GreatWorkWidgetClass);
-
-		GreatWorkWidget->AddToViewport();
-		GreatWorkWidget->GetPosterImage()->SetBrushFromTexture(GreatWork.PosterTexture);
-		GreatWorkWidget->GetDescriptionText()->SetText(GreatWork.Description);
-	}
+    return Requirements;
 }

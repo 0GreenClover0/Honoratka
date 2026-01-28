@@ -1,7 +1,10 @@
 #include "HonoratkaTable.h"
 #include "Customer.h"
+#include "CustomerManager.h"
+#include "CustomerWork.h"
 #include "DrawDebugHelpers.h"
 #include "GameManager.h"
+#include "Honoratka.h"
 #include "Kismet/GameplayStatics.h"
 
 AHonoratkaTable::AHonoratkaTable()
@@ -25,6 +28,7 @@ void AHonoratkaTable::BeginPlay()
     Super::BeginPlay();
 
     GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
+    CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
 
     InitializeSeats();
 }
@@ -32,6 +36,52 @@ void AHonoratkaTable::BeginPlay()
 void AHonoratkaTable::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    FGreatWorkRequirements CustomersAtTable = {};
+    TArray<ACustomer*> Customers = GetCustomers();
+
+    for (int32 i = 0; i < Customers.Num(); ++i)
+    {
+        FCustomerTypeInstance CustomerTypeInstance = Customers[i]->GetCustomerTypeInstance();
+        if (CustomerTypeInstance.Type == static_cast<int32>(ECustomerType::Actor))
+        {
+            if (CustomerTypeInstance.IsMale)
+            {
+                CustomersAtTable.MaleActors += 1;
+            }
+            else
+            {
+                CustomersAtTable.FemaleActors += 1;
+            }
+        }
+        else if (CustomerTypeInstance.Type == static_cast<int32>(ECustomerType::Director))
+        {
+            CustomersAtTable.Directors += 1;
+        }
+        else if (CustomerTypeInstance.Type == static_cast<int32>(ECustomerType::Screenwriter))
+        {
+            CustomersAtTable.Screenwriters += 1;
+        }
+    }
+
+    for (int32 i = 0; i < CustomerManager->GreatWorks.Num(); ++i)
+    {
+        UCustomerWork* CustomerWork = CustomerManager->GreatWorks[i];
+        const TArray<FGreatWorkRequirements>& Requirements = CustomerWork->GetRequirements();
+
+        for (int32 r = 0; r < Requirements.Num(); ++r)
+        {
+            if (Requirements[r] == CustomersAtTable)
+            {
+                bool Advancing = CustomerWork->AdvanceWork(DeltaTime);
+
+                if (Advancing)
+                {
+                    return;
+                }
+            }
+        }
+    }
 }
 
 void AHonoratkaTable::InitializeSeats()
