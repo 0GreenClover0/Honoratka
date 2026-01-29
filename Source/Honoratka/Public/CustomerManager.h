@@ -158,6 +158,7 @@ public:
     // Number of customers
     int NumberOfCustomersInQueue = 0;
     int NumberOfCustomersInside = 0;
+    int NumberOfFamiliarCustomersInside = 0;
 
 private:
 

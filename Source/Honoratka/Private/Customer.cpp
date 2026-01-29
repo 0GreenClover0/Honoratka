@@ -85,6 +85,11 @@ void ACustomer::LeaveRestaurant()
     else
     {
         CustomerManager->NumberOfCustomersInside--;
+
+        if (CustomerManager->IsCustomerFamiliar(this))
+        {
+            CustomerManager->NumberOfFamiliarCustomersInside--;
+        }
     }
 
     if (Table)
@@ -107,6 +112,11 @@ void ACustomer::SeatCustomer(AHonoratkaTable* TableToSeat, FVector const& Positi
 
         CustomerManager->NumberOfCustomersInQueue--;
         CustomerManager->NumberOfCustomersInside++;
+
+        if (CustomerManager->IsCustomerFamiliar(this))
+        {
+            CustomerManager->NumberOfFamiliarCustomersInside++;
+        }
     }
 
     SetCustomerState(ECustomerState::Seated);
@@ -189,6 +199,11 @@ void ACustomer::GiveDish(EFoodType FoodType)
         CustomerManager->ModifyHappiness(1.0f);
 
         bIsSatisfied = true;
+
+        if (!CustomerManager->IsCustomerFamiliar(this))
+        {
+            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfFamiliarCustomersInside);
+        }
 
         return;
     }
