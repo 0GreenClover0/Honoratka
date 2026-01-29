@@ -39,6 +39,8 @@ public:
 
     const TArray<FGreatWorkRequirements>& GetRequirements() const;
 
+    bool IsFinished() const;
+
 protected:
     UPROPERTY()
     float WorkProgress = 0.0f;

@@ -40,3 +40,8 @@ const TArray<FGreatWorkRequirements>& UCustomerWork::GetRequirements() const
 {
     return Requirements;
 }
+
+bool UCustomerWork::IsFinished() const
+{
+    return bWorkFinished;
+}

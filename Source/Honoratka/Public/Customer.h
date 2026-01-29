@@ -147,6 +147,8 @@ public:
     
     TObjectPtr<UMaterialInstanceDynamic> OutlineDynamicMaterial;
 
+    bool bHasMadeAGreatWork = false;
+
 protected:
     UPROPERTY(BlueprintReadWrite, Category = "Movement")
     float WalkSpeed = 150.0f;

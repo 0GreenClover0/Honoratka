@@ -50,6 +50,12 @@ void AHonoratkaTable::Tick(float DeltaTime)
             continue;
         }
 
+        // Customers that have already created a great work, can't create another.
+        if (Customers[i]->bHasMadeAGreatWork)
+        {
+            continue;
+        }
+
         if (CustomerTypeInstance.Type == static_cast<int32>(ECustomerType::Actor))
         {
             if (CustomerTypeInstance.IsMale)
@@ -81,6 +87,14 @@ void AHonoratkaTable::Tick(float DeltaTime)
             if (Requirements[r] == CustomersAtTable)
             {
                 bool Advancing = CustomerWork->AdvanceWork(DeltaTime);
+
+                if (Advancing && CustomerWork->IsFinished())
+                {
+                    for (int32 c = 0; c < Customers.Num(); ++c)
+                    {
+                        Customers[c]->bHasMadeAGreatWork = true;
+                    }
+                }
 
                 if (Advancing)
                 {
