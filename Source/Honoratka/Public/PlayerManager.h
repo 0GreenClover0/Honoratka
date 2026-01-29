@@ -32,6 +32,8 @@ public:
     void SelectObject(TObjectPtr<AInteractable> Object, TObjectPtr<UTexture2D> Icon);
     void UnselectObject();
 
+    bool HasSelectedObject() const;
+
 protected:
     virtual void BeginPlay() override;
 
@@ -47,7 +49,7 @@ public:
 
 private:
     UPROPERTY()
-    TObjectPtr<UPlayerCursor> PlayerCursor;
+    TObjectPtr<UPlayerCursor> PlayerCursor = nullptr;
 
-    TOptional<FSelectedObject> SelectedObject;
+    TOptional<FSelectedObject> SelectedObject = {};
 };

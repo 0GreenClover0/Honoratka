@@ -42,5 +42,6 @@ protected:
     UPROPERTY(BlueprintReadOnly)
     TObjectPtr<APlayerManager> PlayerManager;
 
+    UPROPERTY()
     TObjectPtr<UMaterialInterface> OutlineMaterial;
 };

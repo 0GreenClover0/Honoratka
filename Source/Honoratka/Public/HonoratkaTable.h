@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "HonoratkaTable.generated.h"
 
+class APlayerManager;
 class ACustomerManager;
 class AGameManager;
 class ACustomer;
@@ -44,6 +45,8 @@ public:
 
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+    virtual void NotifyActorBeginCursorOver() override;
+    virtual void NotifyActorEndCursorOver() override;
 
     // Table management
     bool CanSeatCustomers(int32 Count) const;
@@ -76,6 +79,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Components")
     TArray<USceneComponent*> SeatComponents;
 
+    UPROPERTY(EditAnywhere)
+    TObjectPtr<UMaterialInterface> OutlineMaterial;
+
 private:
     UPROPERTY()
     AGameManager* GameManager = nullptr;
@@ -84,5 +90,11 @@ private:
     ACustomerManager* CustomerManager = nullptr;
 
     UPROPERTY()
+    APlayerManager* PlayerManager = nullptr;
+
+    UPROPERTY()
     TArray<FTableSeat> Seats;
+
+    UPROPERTY()
+    TArray<TObjectPtr<UStaticMeshComponent>> MeshComponents;
 };

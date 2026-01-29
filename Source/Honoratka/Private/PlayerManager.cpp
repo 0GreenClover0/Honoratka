@@ -45,3 +45,8 @@ void APlayerManager::UnselectObject()
 
     PlayerCursor->UpdateHeldObjectIcon(nullptr);
 }
+
+bool APlayerManager::HasSelectedObject() const
+{
+    return SelectedObject.IsSet() && SelectedObject->Object != nullptr;
+}

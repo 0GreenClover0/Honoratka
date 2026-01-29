@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 #include "GameManager.h"
 #include "Honoratka.h"
+#include "PlayerManager.h"
 #include "Kismet/GameplayStatics.h"
 
 AHonoratkaTable::AHonoratkaTable()
@@ -29,6 +30,9 @@ void AHonoratkaTable::BeginPlay()
 
     GameManager = Cast<AGameManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGameManager::StaticClass()));
     CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
+    PlayerManager = Cast<APlayerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerManager::StaticClass()));
+
+    GetComponents(MeshComponents);
 
     InitializeSeats();
 }
@@ -102,6 +106,33 @@ void AHonoratkaTable::Tick(float DeltaTime)
                 }
             }
         }
+    }
+}
+
+void AHonoratkaTable::NotifyActorBeginCursorOver()
+{
+    Super::NotifyActorBeginCursorOver();
+
+    if (PlayerManager->HasSelectedObject())
+    {
+        return;
+    }
+
+    for (int32 i = 0; i < MeshComponents.Num(); ++i)
+    {
+        MeshComponents[i]->SetOverlayMaterial(OutlineMaterial);
+        MeshComponents[i]->bDisallowNanite = true;
+    }
+}
+
+void AHonoratkaTable::NotifyActorEndCursorOver()
+{
+    Super::NotifyActorEndCursorOver();
+
+    for (int32 i = 0; i < MeshComponents.Num(); ++i)
+    {
+        MeshComponents[i]->SetOverlayMaterial(nullptr);
+        MeshComponents[i]->bDisallowNanite = false;
     }
 }
 
