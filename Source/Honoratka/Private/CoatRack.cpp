@@ -55,7 +55,7 @@ void ACoatRack::Fall()
         {
             FallRotation = 90.0f;
             ACustomerManager* CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
-            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfCustomersInside);
+            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfCustomersInside / 2);
         }
     }
 

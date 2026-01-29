@@ -202,7 +202,7 @@ void ACustomer::GiveDish(EFoodType FoodType)
 
         if (!CustomerManager->IsCustomerFamiliar(this))
         {
-            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfFamiliarCustomersInside);
+            CustomerManager->ModifyHappiness(-CustomerManager->NumberOfFamiliarCustomersInside / 1.5);
         }
 
         return;
