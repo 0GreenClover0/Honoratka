@@ -390,6 +390,12 @@ void ACustomer::ShowBubble(UTexture2D* BubbleTexture)
 
 void ACustomer::OnCustomerBubbleSpawned()
 {
+    // Customer was already satisfied before even showing the desired food.
+    if (bIsSatisfied)
+    {
+	    return;
+    }
+
     ShowBubble(DesiredFoodTexture);
 }
 
