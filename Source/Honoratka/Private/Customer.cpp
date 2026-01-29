@@ -175,7 +175,7 @@ FCustomerTypeInstance ACustomer::GetCustomerTypeInstance() const
 
 void ACustomer::GiveDish(EFoodType FoodType)
 {
-    if (bIsSatisfied)
+    if (bIsSatisfied || CurrentState != ECustomerState::Seated)
     {
         return;
     }
