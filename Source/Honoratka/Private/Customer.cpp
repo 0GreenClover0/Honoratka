@@ -188,6 +188,8 @@ void ACustomer::GiveDish(EFoodType FoodType)
 
         CustomerManager->ModifyHappiness(1.0f);
 
+        bIsSatisfied = true;
+
         return;
     }
 
