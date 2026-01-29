@@ -69,4 +69,5 @@ void ATimer::OnTimerFired()
 void ATimer::FinishTimer()
 {
     OnTimerFinished.Broadcast();
+    GameManager->FinishDay();
 }

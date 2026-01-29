@@ -381,6 +381,11 @@ bool ACustomerManager::IsCustomerFamiliar(const FCustomerTypeInstance& CustomerT
     return CustomerAlbumReference->IsCustomerFamiliar(CustomerTypeInstance);
 }
 
+float ACustomerManager::GetHappiness() const
+{
+    return Happiness;
+}
+
 void ACustomerManager::ModifyHappiness(float Amount)
 {
     if (Amount > 0)

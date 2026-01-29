@@ -2,6 +2,7 @@
 #include "Customer.h"
 #include "HonoratkaTable.h"
 #include "CustomerManager.h"
+#include "CustomerWork.h"
 #include "Kismet/GameplayStatics.h"
 
 AGameManager::AGameManager()
@@ -118,6 +119,13 @@ void AGameManager::Resume()
 bool AGameManager::IsPaused() const
 {
     return bIsPaused;
+}
+
+void AGameManager::FinishDay() const
+{
+    DayEnding->SetDescription(FText::Format(DayEnding->GetDescription(), FText::AsNumber(static_cast<int32>(CustomerManager->GetHappiness()))));
+
+    DayEnding->AdvanceWork(1000.0f, DayEndWidgetClass);
 }
 
 void AGameManager::AssignCustomersToTable(AHonoratkaTable* Table)

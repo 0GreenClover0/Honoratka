@@ -35,11 +35,14 @@ class HONORATKA_API UCustomerWork : public UActorComponent
 public:    
     UCustomerWork();
     
-    bool AdvanceWork(float Amount);
+    bool AdvanceWork(float Amount, TSubclassOf<UCustomerGreatWorkWidget> Widget = nullptr);
 
     const TArray<FGreatWorkRequirements>& GetRequirements() const;
 
     bool IsFinished() const;
+
+    FText GetDescription() const;
+    void SetDescription(const FText& NewDescription);
 
 protected:
     UPROPERTY()

@@ -12,7 +12,7 @@ UCustomerWork::UCustomerWork()
     PrimaryComponentTick.bCanEverTick = true;
 }
 
-bool UCustomerWork::AdvanceWork(float Amount)
+bool UCustomerWork::AdvanceWork(float Amount, TSubclassOf<UCustomerGreatWorkWidget> Widget)
 {
     if (bWorkFinished)
     {
@@ -26,7 +26,15 @@ bool UCustomerWork::AdvanceWork(float Amount)
         bWorkFinished = true;
 
         ACustomerManager* CustomerManager = Cast<ACustomerManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustomerManager::StaticClass()));
-        GreatWorkWidget = CreateWidget<UCustomerGreatWorkWidget>(GetWorld(), CustomerManager->GreatWorkWidgetClass);
+
+        if (Widget == nullptr)
+        {
+            GreatWorkWidget = CreateWidget<UCustomerGreatWorkWidget>(GetWorld(), CustomerManager->GreatWorkWidgetClass);
+        }
+        else
+        {
+            GreatWorkWidget = CreateWidget<UCustomerGreatWorkWidget>(GetWorld(), Widget);
+        }
 
         GreatWorkWidget->AddToViewport();
         GreatWorkWidget->GetPosterImage()->SetBrushFromTexture(PosterTexture);
@@ -44,4 +52,14 @@ const TArray<FGreatWorkRequirements>& UCustomerWork::GetRequirements() const
 bool UCustomerWork::IsFinished() const
 {
     return bWorkFinished;
+}
+
+FText UCustomerWork::GetDescription() const
+{
+    return Description;
+}
+
+void UCustomerWork::SetDescription(const FText& NewDescription)
+{
+    Description = NewDescription;
 }

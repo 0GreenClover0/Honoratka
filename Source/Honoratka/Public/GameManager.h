@@ -5,6 +5,8 @@
 #include "GameFramework/Actor.h"
 #include "GameManager.generated.h"
 
+class UCustomerGreatWorkWidget;
+class UCustomerWork;
 class ACustomer;
 class AHonoratkaTable;
 class ACustomerManager;
@@ -52,6 +54,14 @@ public:
     void Resume();
     bool IsPaused() const;
 
+    void FinishDay() const;
+
+private:
+    void AssignCustomersToTable(AHonoratkaTable* Table);
+    void HighlightCustomers(bool bHighlight);
+    AHonoratkaTable* FindCustomerTable(ACustomer* Customer) const;
+
+public:
     // Customer manager reference
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "References")
     TObjectPtr<ACustomerManager> CustomerManager;
@@ -62,6 +72,12 @@ public:
     UPROPERTY(EditAnywhere)
     TObjectPtr<USoundBase> ClockWarningSound = nullptr;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TObjectPtr<UCustomerWork> DayEnding = nullptr;
+
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<UCustomerGreatWorkWidget> DayEndWidgetClass;
+
 private:
     bool bIsPaused = false;
 
@@ -70,8 +86,4 @@ private:
 
     UPROPERTY()
     TObjectPtr<AHonoratkaTable> PreviousTable;
-
-    void AssignCustomersToTable(AHonoratkaTable* Table);
-    void HighlightCustomers(bool bHighlight);
-    AHonoratkaTable* FindCustomerTable(ACustomer* Customer) const;
 };

@@ -80,6 +80,7 @@ public:
     bool IsCustomerFamiliar(ACustomer* Customer) const;
     bool IsCustomerFamiliar(const FCustomerTypeInstance& CustomerTypeInstance) const;
 
+    float GetHappiness() const;
     void ModifyHappiness(float Amount);
 
     void ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting, bool bMirror);
