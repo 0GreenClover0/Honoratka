@@ -194,6 +194,8 @@ void ACustomer::GiveDish(EFoodType FoodType)
     }
 
     ShowBubble(MadTexture);
+
+    CustomerManager->ModifyHappiness(-1.0f);
 }
 
 void ACustomer::NotifyActorOnClicked(FKey ButtonPressed)
