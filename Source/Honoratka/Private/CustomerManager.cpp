@@ -371,6 +371,16 @@ ACustomer* ACustomerManager::GetFirstCustomerInQueue() const
     return nullptr;
 }
 
+bool ACustomerManager::IsCustomerFamiliar(ACustomer* Customer) const
+{
+    return CustomerAlbumReference->IsCustomerFamiliar(Customer->GetCustomerTypeInstance());
+}
+
+bool ACustomerManager::IsCustomerFamiliar(const FCustomerTypeInstance& CustomerTypeInstance) const
+{
+    return CustomerAlbumReference->IsCustomerFamiliar(CustomerTypeInstance);
+}
+
 void ACustomerManager::ModifyHappiness(float Amount)
 {
     if (Amount > 0)

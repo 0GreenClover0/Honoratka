@@ -77,6 +77,9 @@ public:
     int32 GetQueueLength() const { return CustomerQueue.Num(); }
     ACustomer* GetFirstCustomerInQueue() const;
 
+    bool IsCustomerFamiliar(ACustomer* Customer) const;
+    bool IsCustomerFamiliar(const FCustomerTypeInstance& CustomerTypeInstance) const;
+
     void ModifyHappiness(float Amount);
 
     void ChangeCustomerTexture(ACustomer* Customer, bool bIsSitting, bool bMirror);

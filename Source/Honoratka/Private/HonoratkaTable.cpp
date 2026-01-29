@@ -43,6 +43,13 @@ void AHonoratkaTable::Tick(float DeltaTime)
     for (int32 i = 0; i < Customers.Num(); ++i)
     {
         FCustomerTypeInstance CustomerTypeInstance = Customers[i]->GetCustomerTypeInstance();
+
+        // Unfamiliar customers do not contribute to making movies.
+        if (!CustomerManager->IsCustomerFamiliar(CustomerTypeInstance))
+        {
+            continue;
+        }
+
         if (CustomerTypeInstance.Type == static_cast<int32>(ECustomerType::Actor))
         {
             if (CustomerTypeInstance.IsMale)
