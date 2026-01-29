@@ -377,7 +377,7 @@ void ACustomer::ShowBubble(UTexture2D* BubbleTexture)
 
     Bubble->SetTexture(BubbleTexture);
 
-    float TimerToShow = 3.0f;
+    float TimerToShow = 5.0f;
     GetWorld()->GetTimerManager().SetTimer
     (
         TimerHandle,                // handle to cancel timer at a later time

@@ -12,7 +12,7 @@ class HONORATKA_API ACustomerAlbum : public AActor
 
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Customer Spawning", meta = (ClampMin = 0, ClampMax = 64))
-    int32 FamiliarCustomersNum = 10;
+    int32 FamiliarCustomersNum = 12;
 
     TArray<FCustomerTypeInstance> GetAllFamiliarCustomers() const { return FamiliarCustomers; }
     bool IsCustomerFamiliar(const FCustomerTypeInstance& CustomerTypeInstance) const;
