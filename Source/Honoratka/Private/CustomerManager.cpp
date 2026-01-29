@@ -399,11 +399,11 @@ void ACustomerManager::ChangeCustomerTexture(ACustomer* Customer, bool bIsSittin
 {
     if (bMirror)
     {
-        Cast<UCapsuleComponent>(Customer->GetDefaultSubobjectByName(TEXT("CollisionCylinder")))->SetRelativeScale3D(FVector(-1.0f, 1.0f, 1.0f));
+        Cast<USceneComponent>(Customer->GetDefaultSubobjectByName(TEXT("BodyRoot")))->SetRelativeScale3D(FVector(-1.0f, 1.0f, 1.0f));
     }
     else
     {
-        Cast<UCapsuleComponent>(Customer->GetDefaultSubobjectByName(TEXT("CollisionCylinder")))->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+        Cast<USceneComponent>(Customer->GetDefaultSubobjectByName(TEXT("BodyRoot")))->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
     }
 
     FCustomerTypeInstance CustomerTypeInstance = Customer->GetCustomerTypeInstance();

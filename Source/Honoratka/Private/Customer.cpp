@@ -11,6 +11,12 @@
 ACustomer::ACustomer()
 {
     PrimaryActorTick.bCanEverTick = true;
+
+    BubblePin = CreateDefaultSubobject<USceneComponent>(FName("BubblePin"));
+    BubblePin->SetupAttachment(RootComponent);
+
+    BodyRoot = CreateDefaultSubobject<USceneComponent>(FName("BodyRoot"));
+    BodyRoot->SetupAttachment(RootComponent);
 }
 
 void ACustomer::BeginPlay()
@@ -302,7 +308,7 @@ void ACustomer::UpdateMovement(float DeltaTime)
 
 void ACustomer::UpdateBubblePosition()
 {
-    Bubble->SetPosition(GetActorLocation());
+    Bubble->SetPosition(BubblePin->GetComponentLocation());
 }
 
 bool ACustomer::HasReachedTarget() const
@@ -338,12 +344,10 @@ void ACustomer::SelectDesiredFoodItem()
 
 void ACustomer::ShowBubble(UTexture2D* BubbleTexture)
 {
-    FVector WorldLocation = GetActorLocation();
-
     if (Bubble == nullptr)
     {
         Bubble = CreateWidget<UCustomerBubbleWidget>(GetWorld(), BubbleWidget);
-        Bubble->SetVisible(true, WorldLocation);
+        Bubble->SetVisible(true, BubblePin->GetComponentLocation());
     }
     else
     {

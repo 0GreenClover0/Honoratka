@@ -159,6 +159,12 @@ protected:
     UPROPERTY(BlueprintReadWrite, Category = "Queue")
     int32 QueuePosition = -1;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<USceneComponent> BubblePin = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<USceneComponent> BodyRoot = nullptr;
+
 private:
     UPROPERTY()
     AGameManager* GameManager = nullptr;
